@@ -10,7 +10,7 @@ from utils.powerbuffer import PowerBuffer
 import threading
 import time
 
-class PowerEstimator(threading.Thread):
+class PowerEstimator(threading.Thread, phone):
 
     POLYNOMIAL_WEIGHT = 0.2
     ITERATION_INTERVAL = 1000  # 1 second
@@ -26,29 +26,10 @@ class PowerEstimator(threading.Thread):
         # Running apps: { uid : app_name }
         self._running_apps = {}
 
-        # TODO: Set this up
-        self._hardware = {
-            Hardware.CPU: None,
-            Hardware.WIFI: None,
-            Hardware.THREEG: None,
-            Hardware.GPS: None,
-            Hardware.AUDIO: None,
-            Hardawre.SENSORS: None,
-        }
+        self._phone = phone
 
-        self._history = dict(self._hardware.keys(), None)
+        self._history = dict(self._phone.hardware.keys(), None)
         self._oled_pwr_history = {}
-
-
-        # TODO: Set this up
-        self._pwr_functions = {
-            Hardware.CPU: None,
-            Hardware.WIFI: None,
-            Hardware.THREEG: None,
-            Hardware.GPS: None,
-            Hardware.AUDIO: None,
-            Hardawre.SENSORS: None,
-        }
 
         self._log = open("powerlog.log", "w")
 
@@ -67,7 +48,7 @@ class PowerEstimator(threading.Thread):
 
         start_time = round(time.time())
 
-        for hw in self._hardware:
+        for hw in self._phone.hardware.values():
             hw.init(start_time, self.ITERATION_INTERVAL)
             hw.start()
 
@@ -92,7 +73,7 @@ class PowerEstimator(threading.Thread):
             total_power = 0
 
             hw_data = {}
-            for name, hw in self._hardware.iteritems():
+            for name, hw in self._phone.hardware.iteritems():
                 data = hw.get_data(iter_num-1)
 
                 if data is None:
@@ -102,7 +83,7 @@ class PowerEstimator(threading.Thread):
 
                 for uid, usage in data.uid_usage.iteritems():
 
-                    power = self._pwr_functions[name].calc_power(usage)
+                    power = self._phone.power_function[name](usage)
                     usage = power
                     self._history[name].add(uid, iter_num, power)
                     if uid == SystemInfo.AID_ALL:
@@ -123,7 +104,7 @@ class PowerEstimator(threading.Thread):
                 self._log_power()
 
         # Wait for all hardware monitors to finish
-        for hw in self._hardware:
+        for hw in self._phone.hardware.values():
             hw.stop()
             hw.join()
 
@@ -184,7 +165,7 @@ class PowerEstimator(threading.Thread):
         return avg
 
     def get_hardware_names(self):
-        return self.hardware.keys()
+        return self._phone.hardware.keys()
 
 
     def get_hardware_max_powers(self):
@@ -196,7 +177,7 @@ class PowerEstimator(threading.Thread):
         '''Return a mask indicating which hardware components do not provide
         UID information'''
         mask = 0
-        for i, hw in self,_hardware.values().enumerate():
+        for i, hw in self._phone.hardware.values().enumerate():
             if not hw.has_uid_information:
                 mask |= 1 << i
 
@@ -217,7 +198,7 @@ class PowerEstimator(threading.Thread):
 
             return result
 
-        if name not in self._hardware.keys():
+        if name not in self._phone.hardware.keys():
             return None
 
         return self._pwr_history[name].get_power_up_to_timestamp(uid, iter_num,
@@ -268,7 +249,7 @@ class PowerEstimator(threading.Thread):
                 scale = self.ITERATION_INTERVAL / 1000
 
                 uid_info = UidInfo(uid, power,
-                        _filter_sum(get_uid_hw_powers(uid, countertype),
+                        _filter_sum(self.get_uid_hw_powers(uid, countertype),
                             ignore_mask) * self.ITERATION_INTERVAL /
                         1000, get_runtime(uid, countertype) *
                         self.ITERATION_INTERVAL / 1000)
