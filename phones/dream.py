@@ -12,8 +12,33 @@ from monitors.screen.lcd import LCDData
 from monitors.screen.oled import OLEDData
 from monitors.threeg import ThreeG, ThreeGData
 from monitors.wifi import Wifi, WifiData
+from phones.device import Device
 from phones.device import DeviceConstants
+
 from utils.hardware import Hardware
+
+class DreamPhone(Device):
+
+    hardware = {
+            Hardware.CPU: CPU(Constants),
+            Hardware.LCD: LCD(Constants),
+            Hardware.WIFI: Wifi(Constants),
+            Hardware.THREEG: ThreeG(Constants),
+            Hardware.GPS: GPS(Constants),
+            Hardawre.AUDIO: Audio(Constants),
+            Hardware.SENSORS: Sensors(Constants),
+    }
+
+    power_function = {
+            Hardware.CPU: PowerCalculator.get_cpu_power,
+            Hardware.LCD: PowerCalculator.get_lcd_power,
+            Hardware.WIFI: PowerCalculator.get_wifi_power,
+            Hardware.THREEG: PowerCalculator.get_3g_power,
+            Hardware.GPS: PowerCalculator.get_gps_power,
+            Hardware.AUDIO: PowerCalculator.get_audio_power,
+            Hardware.SENSORS: PowerCalculator.get_sensor_power,
+    }
+
 
 class PowerCalculator(object):
 
@@ -227,5 +252,3 @@ class Constants(DeviceConstants):
 
         # Where does this value come from?
         return 900
-
-
