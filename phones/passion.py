@@ -5,13 +5,35 @@ try:
 except ImportError:
     from utils.androidhelpers.display import DisplayAccess
 
+from monitors.device import Device
+from monitors.screen.oled import OLEDData
 from phones.dream import PowerCalculator as DreamCalculator
 from phones.dream import Constants as DreamConstants
-
-from monitors.screen.oled import OLEDData
 from utils.hardware import Hardware
 
 Display = DisplayAccess()
+
+class PassionPhone(Device):
+    hardware = {
+            Hardware.CPU: CPU(DreamConstants),
+            Hardware.LCD: LCD(DreamConstants),
+            Hardware.WIFI: Wifi(DreamConstants),
+            Hardware.THREEG: ThreeG(DreamConstants),
+            Hardware.GPS: GPS(DreamConstants),
+            Hardawre.AUDIO: Audio(DreamConstants),
+            Hardware.SENSORS: Sensors(DreamConstants),
+    }
+
+    power_function = {
+            Hardware.CPU: PowerCalculator.get_cpu_power,
+            Hardware.LCD: PowerCalculator.get_lcd_power,
+            Hardware.WIFI: PowerCalculator.get_wifi_power,
+            Hardware.THREEG: PowerCalculator.get_3g_power,
+            Hardware.GPS: PowerCalculator.get_gps_power,
+            Hardware.AUDIO: PowerCalculator.get_audio_power,
+            Hardware.SENSORS: PowerCalculator.get_sensor_power,
+    }
+
 
 class PowerCalculator(DreamCalculator):
     """ HTC Passion inherits most of its coefficients from HTC Dream, as most
