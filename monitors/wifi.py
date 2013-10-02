@@ -6,7 +6,7 @@ try:
 except ImportError:
     from utils.androidhelpers.wifi import Wifi
 
-from monitors.powermonitor import PowerMonitor
+from monitors.devicemonitor import DeviceMonitor
 from services.usagedata import UsageData
 from utils.hardware import Hardware
 from utils.sysfs import Node
@@ -15,7 +15,7 @@ from utils.systeminfo import SystemInfo
 import os
 import time
 
-class Wifi(PowerMonitor):
+class Wifi(DeviceMonitor):
 
     POWER_STATE_LOW = 0
     POWER_STATE_HIGH = 1

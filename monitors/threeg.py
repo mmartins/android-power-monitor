@@ -7,7 +7,7 @@ try:
 except ImportError:
     from utils.androidhelpers.telephony import TelephonyAccess
 from monitors.telephony import Telephony
-from monitors.powermonitor import PowerMonitor
+from monitors.devicemonitor import DeviceMonitor
 from services.usagedata import UsageData
 from services.powerestimator import PowerEstimator
 from utils.hardware import Hardware
@@ -17,7 +17,7 @@ from utils.systeminfo import SystemInfo
 import os
 import time
 
-class ThreeG(PowerMonitor):
+class ThreeG(DeviceMonitor):
     POWER_STATE_IDLE = 0
     POWER_STATE_FACH = 1
     POWER_STATE_HIGH = 2

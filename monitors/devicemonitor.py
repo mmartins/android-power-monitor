@@ -4,7 +4,7 @@ import logging
 import threading
 import time
 
-class PowerMonitor(threading.Thread):
+class DeviceMonitor(threading.Thread):
 
     __slots__ = ["_constants", "has_uid_information"]
 
@@ -17,7 +17,7 @@ class PowerMonitor(threading.Thread):
         self.logger = logging.getLogger(monitor_name)
         self._stop = threading.Event()
 
-        super(PowerMonitor, self).__init__(target=self._run)
+        super(DeviceMonitor, self).__init__(target=self._run)
         self._data_lock = threading.Lock()
         #self.start()
 

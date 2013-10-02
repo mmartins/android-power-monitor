@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 from monitors.cpu import CPU
-from monitors.powermonitor import PowerMonitor
+from monitors.devicemonitor import DeviceMonitor
 from services.iterationdata import IterationData
 from utils.hardware import Hardware
 
-class Processor(PowerMonitor):
+class Processor(DeviceMonitor):
 
     SYSFS_CPU_FILE = "/sys/devices/system/cpu/present"
 

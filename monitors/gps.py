@@ -16,7 +16,7 @@ except ImportError:
     from utils.androidhelpers.notification import NotificationProxy
 
 from android.broadcast import BroadcastReceiver
-from powermonitor import PowerMonitor
+from monitors.devicemonitor import DeviceMonitor
 from services.iterationdata import IterationData
 from services.notification import NotificationService
 from services.usagedata import UsageData
@@ -25,7 +25,7 @@ from utils.hardware import Hardware
 import logging
 import threading
 
-class GPS(PowerMonitor):
+class GPS(DeviceMonitor):
 
     # Constants from android.location.GpsStatus
     GPS_EVENT_STARTED = 1

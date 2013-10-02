@@ -10,14 +10,14 @@ try:
 except ImportError:
     from utils.androidhelpers.audio import AudioAccess
 
-from monitors.powermonitor import PowerMonitor
+from monitors.devicemonitor import DeviceMonitor
 from services.usagedata import UsageData
 from utils.hardware import Hardware
 from utils.systeminfo import SystemInfo
 
 import threading.Lock
 
-class Audio(PowerMonitor):
+class Audio(DeviceMonitor):
 
     AudioProxy = AudioAccess()
 

@@ -10,7 +10,7 @@ try:
     from libs.sensors import SensorAccess
 except ImportError:
     from utils.androidhelpers.sensors import SensorAccess
-from monitors.powermonitor import PowerMonitor
+from monitors.devicemonitor import DeviceMonitor
 from services.usagedata import UsageData
 from utils.hardware import Hardware
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 from __future__ import division
-from monitors.powermonitor import PowerMonitor
+from monitors.devicemonitor import DeviceMonitor
 from services.iterationdata import IterationData
 from services.usagedata import UsageData
 from utils.hardware import Hardware
 from utils.systeminfo import SystemInfo
 
-class CPU(PowerMonitor):
+class CPU(DeviceMonitor):
 
     TAG_MASK = Hardware.CPU + "{0}"
     CPUINFO_FILE = "/proc/cpuinfo"
