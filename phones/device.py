@@ -27,14 +27,3 @@ class Device(object):
     # This is an abstract class that should be extended and incr
     def __init__(self):
         raise NotImplementedError
-
-
-class DeviceConstants(object):
-
-    PROVIDER_ATT = "AT&T"
-    PROVIDER_TMOBILE = "T - Mobile"
-
-    @classmethod
-    def get_max_power(cls, monitor_name):
-        raise NotImplementedError("DeviceConstants class shouldn't be instantiated directly")
-

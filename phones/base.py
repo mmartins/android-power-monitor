@@ -14,11 +14,14 @@ from monitors.screen.lcd import LCDData
 from monitors.screen.oled import OLEDData
 from monitors.threeg import ThreeG, ThreeGData
 from monitors.wifi import Wifi, WifiData
-from phones.device import Device, DeviceConstants
+from phones.device import Device
 
 from utils.hardware import Hardware
 
-class Constants(DeviceConstants):
+class Constants(object):
+
+    PROVIDER_ATT = "AT&T"
+    PROVIDER_TMOBILE = "T - Mobile"
 
     BATTERY_VOLTAGE = 0
     MODEL_NAME = "base"
