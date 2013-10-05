@@ -39,10 +39,8 @@ class GPS(DeviceMonitor):
     GPS_STATUS_ENGINE_ON = 3
     GPS_STATUS_ENGINE_OFF = 4
 
-    HOOK_LIBGPS = 1
-    HOOK_GPS_STATUS_LISTENER = 2
-    HOOK_NOTIFICATIONS = 4
-    HOOK_GPS_STATUS_FILE = "/data/misc/gps.status"
+    HOOK_GPS_STATUS_LISTENER = 1
+    HOOK_NOTIFICATIONS = 2
 
     POWER_STATE_OFF = 0
     POWER_STATE_SLEEP = 1
@@ -69,13 +67,6 @@ class GPS(DeviceMonitor):
         self._listener = GPSListener(self.__on_gps_status_changed)
         self._listener.start()
 
-        if os.path.isfile(HOOK_GPS_STATUS_FILE):
-            self._gpspipe_stop = threading.Event()
-            self._gpspipe_thread = threading.Thread(target=self._read_gps_pipe)
-            self._gpspipe_thread.start()
-        else:
-            self._gpspipe_thread = None
-
         # Use notification service to gather UID information if it's available
 
         callbacks = {
@@ -92,9 +83,6 @@ class GPS(DeviceMonitor):
     def _on_exit(self):
         self._listener.stop()
 
-        if self._pipe_thread is not None:
-            self._gpspipe_stop.set()
-
         if NotificationProxy.is_available():
             self._event_server.remove_hook()
 
@@ -106,43 +94,27 @@ class GPS(DeviceMonitor):
 
     def _setup_gps_hook(self):
         """ Setup method for collecting GPS state information. """
-        if os.path.isfile(self.HOOK_GPS_STATUS_FILE):
-            # The libgps hack appears to be available. Let's use this to gather
-            # status updates from the GPS
-            self._hook_method = self.HOOK_LIBGPS
-        else:
-            # We can always use the status listener hook and perhaps the
-            # notification hook if we are running eclaire or higher and the
-            # notification hook is installed. We can only do this on eclaire or
-            # higher because it wasn't until eclaire that they fixed a bug
-            # where they didn't maintain a wakelock while the GPS engine was on
-            self._hook_method = self.HOOK_GPS_STATUS_LISTENER
+        # We can always use the status listener hook and perhaps the
+        # notification hook if we are running eclaire or higher and the
+        # notification hook is installed. We can only do this on eclaire or
+        # higher because it wasn't until eclaire that they fixed a bug
+        # where they didn't maintain a wakelock while the GPS engine was on
+        self._hook_method = self.HOOK_GPS_STATUS_LISTENER
 
-            try:
-                # >= 5: eclair or higher
-                if ((NotificationProxy.is_available() and
-                    Build.VERSION.SDK_INT >= 5)):
-                    self._hook_method |= self.HOOK_NOTIFICATIONS
-            except ValueError:
-                pass
+        try:
+            # >= 5: eclair or higher
+            if ((NotificationProxy.is_available() and
+                Build.VERSION.SDK_INT >= 5)):
+                self._hook_method |= self.HOOK_NOTIFICATIONS
+        except ValueError:
+            pass
 
-            # If we don't have a way of getting the off<->sleep transitions via
-            # notifications, let's just use a timer and simulate the state of
-            # the GPS instead
+        # If we don't have a way of getting the off<->sleep transitions via
+        # notifications, let's just use a timer and simulate the state of
+        # the GPS instead
 
-            if ((self._hook_method) & (self.HOOK_LIBGPS |
-                self.HOOK_NOTIFICATIONS) == 0):
-                self._hook_method |= self.HOOK_TIMER
-
-    def _read_gps_pipe(self):
-        """ Thread to continuously read GPS name pipe and feed us with status
-        updates. """
-        while not self._gpspipe_stop.isSet():
-            with open(self.HOOK_GPS_STATUS_FILE) as fp:
-                event = struct.unpack('i', fp.read(4))[0]
-                if event == -1:
-                    break
-                self._statekeeper.update_event(event, self.HOOK_LIBGPS)
+        if ((self._hook_method & self.HOOK_NOTIFICATIONS == 0):
+            self._hook_method |= self.HOOK_TIMER
 
     def __on_start_wakelock(self, uid, name, lock_type):
         """ Callback method for GPS status monitor. """
