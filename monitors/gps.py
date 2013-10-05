@@ -41,6 +41,7 @@ class GPS(DeviceMonitor):
 
     HOOK_GPS_STATUS_LISTENER = 1
     HOOK_NOTIFICATIONS = 2
+    HOOK_TIMER = 4
 
     POWER_STATE_OFF = 0
     POWER_STATE_SLEEP = 1
