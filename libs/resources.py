@@ -13,4 +13,4 @@ class ResourceAccess(object):
         self.activity_manager = PythonActivity.mActivity.getSystemService(Context.ACTIVITY_SERVICE)
 
     def get_running_apps(self):
-        return self.activity_manager.getRunningApps().toArray()
+        return self.activity_manager.getRunningAppProcesses().toArray()
