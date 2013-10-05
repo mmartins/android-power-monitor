@@ -55,4 +55,4 @@ class TelephonyAccess(object):
         return self.telephony_manager.getPhoneType()
 
     def get_operator_name(self):
-        return self.network_operator.getNetworkOperatorName()
+        return self.telephony_manager.getNetworkOperatorName()
