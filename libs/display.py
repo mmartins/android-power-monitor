@@ -3,7 +3,7 @@
 from jnius import autoclass
 
 DisplayMetrics = autoclass('android.utils.DisplayMetrics')
-Settings = autoclass('android.provider.Settings')
+System = autoclass('android.provider.Settings$System')
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 
 class DisplayAccess(object):
@@ -22,6 +22,5 @@ class DisplayAccess(object):
 
     @staticmethod
     def get_brightness():
-        return Settings.GetInt(
-            PythonActivity.mActivity.getContentResolver(),
-            Settings.Screen.SCREEN_BRIGHTNESS)
+        return System.getInt(PythonActivity.mActivity.getContentResolver(),
+                System.SCREEN_BRIGHTNESS)
