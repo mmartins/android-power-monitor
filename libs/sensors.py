@@ -2,7 +2,7 @@ from jnius import autoclass
 
 Sensor = autoclass('android.hardware.Sensor')
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
-Context = autoclass('android.content.Content')
+Context = autoclass('android.content.Context')
 
 class SensorsAccess(object):
 
@@ -11,6 +11,6 @@ class SensorsAccess(object):
         '''Return dictionary with (name, power) values for each Android
         sensor'''
         sm = PythonActivity.mActivity.getSystemService(Context.SENSOR_SERVICE)
-        sensors = sm.getSensorsList(Sensor.TYPE_ALL).toArray()
+        sensors = sm.getSensorList(Sensor.TYPE_ALL).toArray()
         ret = {s.getName(): s.getPower() for s in sensors}
         return ret
