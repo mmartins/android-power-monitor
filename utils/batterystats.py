@@ -10,7 +10,7 @@ class BatteryStats(object):
 
     @classmethod
     def get_voltage(cls):
-        '''Return battery voltage in volts'''
+        """Return battery voltage in volts"""
         filename = cls._SYSFS_MASK.format("voltage_now")
         # Transform source from mV to V
         factor = 1e-6
@@ -30,7 +30,7 @@ class BatteryStats(object):
 
     @classmethod
     def get_current(cls):
-        '''Return battery current in ampers'''
+        """Return battery current in ampers"""
         filename = cls._SYSFS_MASK.format("current_now")
         # Transform source from uA to A
         factor = 1e-6
@@ -45,7 +45,7 @@ class BatteryStats(object):
 
     @classmethod
     def get_temperature(cls):
-        '''Return battery temperature in Celsius degrees'''
+        """Return battery temperature in Celsius degrees"""
         filename = cls._SYSFS_MASK.format("temp")
         factor = 1e-1
 
@@ -62,7 +62,7 @@ class BatteryStats(object):
 
     @classmethod
     def get_capacity(cls):
-        '''Return remaining batt capacity in percentage'''
+        """Return remaining batt capacity in percentage"""
         filename = cls._SYSFS_MASK.format("capacity")
         # Transform source from percentage to 1
         factor = 0.01
@@ -77,7 +77,7 @@ class BatteryStats(object):
 
     @classmethod
     def get_full_capacity(cls):
-        '''Return battery at full capacity in V'''
+        """Return battery at full capacity in V"""
         filename = cls._SYSFS_MASK.format("full_bat")
 
         # Transform source from mAh to 
