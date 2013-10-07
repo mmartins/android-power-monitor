@@ -7,6 +7,7 @@ from services.usagedata import UsageData
 from utils.hardware import Hardware
 from utils.systeminfo import SystemInfo
 
+
 class CPU(DeviceMonitor):
 
     TAG_MASK = Hardware.CPU + "{0}"
@@ -36,7 +37,7 @@ class CPU(DeviceMonitor):
             self.logger.warn("Failed to read CPU frequency")
             return result
 
-        times = SystemInfo.get_usr_total_times(self.num)
+        times = SystemInfo.get_usr_sys_total_times(self.num)
 
         if times == []:
             self.logger.warn("Failed to read CPU times")
@@ -59,7 +60,7 @@ class CPU(DeviceMonitor):
         # UID (app), therefore we need to account for all processes referring
         # to the same UID
         self._uid_states.clear()
-        pids = SystemInfo.get_running_pids(pids)
+        pids = SystemInfo.get_running_pids()
 
         if pids is not None:
             for i, pid in enumerate(pids):
@@ -73,7 +74,7 @@ class CPU(DeviceMonitor):
                     uid = SystemInfo.get_uid_for_pid(pid)
 
                     if uid >= 0:
-                        self._pid_states[pid] = CpuState(uid)
+                        self._pid_states[pid] = CPUState(uid)
                     else:
                         # Assume process no longer exists
                         continue
