@@ -38,11 +38,11 @@ class LCDUsage(UsageData):
 
     __slots__ = ['brightness', 'screen_on']
 
-    def __init__(brightness, screen_on):
+    def __init__(self, brightness, screen_on):
         self.brightness = brightness
         self.screen_on = screen_on
 
-    def log(out):
+    def log(self, out):
         res = "LCD-brightness {0}\nLCD-screen-on {1}\n".format(self.brightness,
                 self.screen_on)
         out.write(res)
