@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from utils.hardware import Hardware
+
 class Device(object):
 
     hardware = {
