@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 
-from monitors.screen.oled import OLEDData
+from monitors.audio import Audio
+from monitors.cpu import CPU
+from monitors.gps import GPS
+from monitors.screen.oled import OLED
+from monitors.sensors import Sensors
+from monitors.threeg import ThreeG
+from monitors.wifi import Wifi
 from phones.base import Constants as BaseConstants, BaseDevice
 from phones.base import BasePowerCalculator
 
@@ -82,7 +88,7 @@ class MaguroPhone(BaseDevice):
             Hardware.WIFI: PowerCalculator.get_wifi_power,
             Hardware.THREEG: None,
             Hardware.GPS: None,
-            Hardawre.AUDIO: None,
+            Hardware.AUDIO: None,
             Hardware.SENSORS: None
     }
 
