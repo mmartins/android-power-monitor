@@ -9,7 +9,7 @@ from utils.hardware import Hardware
 class LCD(Screen):
 
     def __init__(self, devconstants):
-        super(LCD, self).__init__(Hardware.LCD. devconstants)
+        super(LCD, self).__init__(Hardware.LCD, devconstants)
 
     def calc_iteration(self, iter_num):
         """ Return power usage of each application using display after one
