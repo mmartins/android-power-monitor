@@ -90,11 +90,11 @@ class Constants(BaseConstants):
     @classmethod
     def get_max_power(cls, monitor_name):
         if monitor_name == Hardware.LCD:
-            return cls.LCD_BACKLIGHT + cls.LCD_BRIGHTNESS * 255
+            return cls.LCD_BACKLIGHT + cls.LCD_BRIGHTNESS_PWR * 255
         if monitor_name == Hardware.CPU:
             return cls.CPU_PWR_RATIOS[-1] * 100
         if monitor_name == Hardware.AUDIO:
-            return cls.AUDIO_POWER
+            return cls.AUDIO_PWR
         if monitor_name == Hardware.GPS:
             return cls.GPS_STATE_PWRS[-1]
         if monitor_name == Hardware.WIFI:
@@ -137,7 +137,7 @@ class PowerCalculator(BasePowerCalculator):
     @classmethod
     def get_lcd_power(cls, lcd_data):
         if lcd_data.screen_on:
-            return (Constants.LCD_BRIGHTNESS * lcd_data.brightness +
+            return (Constants.LCD_BRIGHTNESS_PWR * lcd_data.brightness +
                     Constants.LCD_BACKLIGHT)
         return 0
 
