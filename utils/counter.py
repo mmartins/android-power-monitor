@@ -22,10 +22,10 @@ class Counter(object):
         self._start_time = round(time.time())
 
         self._counters = {
-                COUNTER_MINUTE : _BucketCounter(),
-                COUNTER_HOUR : _BucketCounter(),
-                COUNTER_DAY : _BucketCounter(),
-                COUNTER_TOTAL : _BucketCounter(),
+                self.COUNTER_MINUTE : _BucketCounter(),
+                self.COUNTER_HOUR : _BucketCounter(),
+                self.COUNTER_DAY : _BucketCounter(),
+                self.COUNTER_TOTAL : _BucketCounter(),
         }
 
     def add(self, value):
