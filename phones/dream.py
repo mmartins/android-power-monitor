@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 
-from monitors.screen.lcd import LCDData
+from monitors.audio import Audio
+from monitors.cpu import CPU
+from monitors.gps import GPS
+from monitors.screen.lcd import LCD
+from monitors.sensors import Sensors
+from monitors.threeg import ThreeG
+from monitors.wifi import Wifi
 from phones.base import Constants as BaseConstants, BaseDevice
 from phones.base import BasePowerCalculator
 from utils.hardware import Hardware
@@ -111,7 +117,7 @@ class DreamPhone(BaseDevice):
             Hardware.WIFI: Wifi(Constants),
             Hardware.THREEG: ThreeG(Constants),
             Hardware.GPS: GPS(Constants),
-            Hardawre.AUDIO: Audio(Constants),
+            Hardware.AUDIO: Audio(Constants),
             Hardware.SENSORS: Sensors(Constants),
     }
 
