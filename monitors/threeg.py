@@ -139,7 +139,7 @@ class ThreeGUsage(UsageData):
         self.pwr_state = pwr_state
         self.provider = provider
 
-    def log(out):
+    def log(self, out):
         res = "3G-on {0}\n3G-tx_bytes {1}\n3G-rx_bytes {2}\n3G-pwr_state {3}\n3G-providerr {4}\n".format(
                 self.pkts, self.tx_bytes, self.rx_bytes, self.pwr_state,
                 self.provider)
@@ -182,7 +182,7 @@ class ThreeGState(object):
             self.delta_tx_bytes = tx_bytes - self.tx_bytes
             self.delta_rx_bytes = rx_bytes - self.rx_bytes
 
-            inactive = (delta_tx_bytes == 0) and (delta_rx_bytes == 0)
+            inactive = (self.delta_tx_bytes == 0) and (self.delta_rx_bytes == 0)
             if inactive:
                 self._inactive_time += delta_time
             else:
