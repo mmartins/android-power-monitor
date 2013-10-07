@@ -45,7 +45,7 @@ class Audio(DeviceMonitor):
     def _on_exit(self):
         if self.has_uid_information:
             self._event_server.remove_hook()
-        super.(GPS, self)._on_exit()
+        super.(Audio, self)._on_exit()
 
     def __on_system_media_call(self, uid):
         self._sys_uid = uid
