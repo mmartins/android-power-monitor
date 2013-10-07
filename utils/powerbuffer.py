@@ -11,7 +11,7 @@ class PowerBuffer(object):
     def add_power(self, uid, iter_num, power):
         ''' Contract: iteration should only increase accross adds'''
 
-        uid_power = self.uid_powers.get(uid, _UidPower())
+        uid_power = self.uid_powers.get(uid, self._UidPower())
         uid_power.count.add(1)
 
         if power == 0:
@@ -26,7 +26,7 @@ class PowerBuffer(object):
         if len(uid_power.queue) > self._max_queue_size:
             uid_power.queue.pop()
 
-        uid_power.queue.insert(0, _PowerData(iter_num, power))
+        uid_power.queue.insert(0, self._PowerData(iter_num, power))
 
     def get_powers_up_to_timestamp(self, uid, timestamp, number):
         idx = 0
