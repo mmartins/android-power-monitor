@@ -10,12 +10,12 @@ from utils.powerbuffer import PowerBuffer
 import threading
 import time
 
-class PowerEstimator(threading.Thread, phone):
+class PowerEstimator(threading.Thread):
 
     POLYNOMIAL_WEIGHT = 0.2
     ITERATION_INTERVAL = 1000  # 1 second
 
-    def __init__(self):
+    def __init__(self, phone):
         super(PowerEstimator, self).__init__(target=self._run)
         self.daemon = True
 
