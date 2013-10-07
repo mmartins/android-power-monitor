@@ -43,7 +43,7 @@ class OLED(Screen):
         if self._fb_file is not None:
             try:
                 with open(self._fb_file) as fp:
-                    factor = self.width * self.height // NSAMPLES
+                    factor = self.width * self.height // self.NSAMPLES
                     for i in xrange(self.NSAMPLES):
                         self._fb_samples.append((factor * i) + random.randint(0, factor))
             except IOError as (err, strerr):
@@ -116,6 +116,6 @@ class OLEDUsage(UsageData):
         self.brightness = brightness
         self.pix_pwr = pix_pwr
 
-    def log(out):
+    def log(self, out):
         res = "OLED-brightness {0}\nOLED-screen-on {1}\nOLED-pix_power {2}\n"
         out.write(res.format(self.brightness, self.screen_on, self.pix_pwr))
