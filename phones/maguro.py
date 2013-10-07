@@ -12,6 +12,7 @@ from phones.base import BasePowerCalculator
 
 from utils.hardware import Hardware
 
+
 class Constants(BaseConstants):
 
     BATTERY_VOLTAGE = 3.7
