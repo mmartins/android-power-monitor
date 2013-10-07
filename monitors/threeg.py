@@ -170,7 +170,7 @@ class ThreeGState(object):
 
     def interface_off(self):
         self._update_time = round(time.time())
-        self.pwr_state = self.POWER_STATE_IDLE
+        self.pwr_state = ThreeG.POWER_STATE_IDLE
 
     def is_initialized(self):
         return self._update_time is not None
