@@ -6,8 +6,9 @@ try:
     from libs.telephony import TelephonyAccess
 except ImportError:
     from utils.androidhelpers.telephony import TelephonyAccess
-from monitors.telephony import Telephony
+
 from monitors.devicemonitor import DeviceMonitor
+from services.iterationdata import IterationData
 from services.usagedata import UsageData
 from services.powerestimator import PowerEstimator
 from utils.hardware import Hardware
