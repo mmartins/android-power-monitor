@@ -200,7 +200,7 @@ class GPS(DeviceMonitor):
 
                     # Remove state information for UIDs no longer using the GPS
                     if pwr_state == self.POWER_STATE_OFF:
-                        del(uid_states[uid])
+                        del(self._uid_states[uid])
 
         return result
 
@@ -284,7 +284,7 @@ class GPSState(object):
         elif event == self.GPS_STATUS_ENGINE_OFF:
             self.pwr_state = self.POWER_STATE_OFF
         else:
-            logger.warn("Unknown GPS event capture: {0}".format(event))
+            self.logger.warn("Unknown GPS event capture: {0}".format(event))
 
         if self.pwr_state != prev_state:
             if (prev_state == self.POWER_STATE_ON) and (self.pwr_state ==
