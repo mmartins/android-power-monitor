@@ -44,7 +44,7 @@ class ThreeG(DeviceMonitor):
                 devconstants.get_3g_rx_queue(self._provider))
 
         self._uid_states = {}
-        self._sysfs = Node(self.NET_STATISTICS_MASK.format(self.iface))
+        self._sysfs = Node(self.NET_STATISTIC_MASK.format(self.iface))
 
         # Test file existence
         self.has_uid_information = os.access(self.UID_STATS_FOLDER, os.F_OK)
@@ -150,8 +150,8 @@ class ThreeGState(object):
     __slots__ = ['pwr_state', '_dch_fach_time', 'fach_idle_time',
             '_txqueue_size', '_rxqueue_size']
 
-    def __init__(self, dch_fach_time, fach_idle_time, tx_queue_size,
-            rx_queue_size):
+    def __init__(self, dch_fach_time, fach_idle_time, txqueue_size,
+            rxqueue_size):
         self.tx_bytes = 0
         self.rx_bytes = 0
         self.delta_pkts = 0
