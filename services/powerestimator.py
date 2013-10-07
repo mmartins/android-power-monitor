@@ -35,7 +35,7 @@ class PowerEstimator(threading.Thread):
 
         self._appslock = threading.Lock()
         self._iterlock = threading.Lock()
-        self._loglock = threading,Lock()
+        self._loglock = threading.Lock()
 
         # self.start()
 
@@ -144,7 +144,7 @@ class PowerEstimator(threading.Thread):
         hw_history = self._get_hw_history(5 * 60, -1, SystemInfo.AID_ALL, -1)
 
         avg = 0
-        weighted_power = 0
+        weighted_pwr = 0
         cnt = 0
 
         INV_POLY_WEIGHT = 1.0 - self.POLYNOMIAL_WEIGHT
@@ -229,7 +229,7 @@ class PowerEstimator(threading.Thread):
         if runtime == 0:
             runtime = 1
 
-        avgs = {k : (v / runtime) for k, v in hw_power.iteritems()}
+        avgs = {k : (v / runtime) for k, v in hw_powers.iteritems()}
 
         return avgs
 
