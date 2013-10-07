@@ -4,6 +4,7 @@ from services.usagedata import UsageData
 
 import unittest
 
+
 class TestUsageData(unittest):
     def setUp(self):
         self.data = UsageData(10)
