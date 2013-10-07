@@ -55,7 +55,7 @@ class Screen(PowerMonitor):
             except (IOError, ValueError):
                 pass
 
-        return Display.get_brightness()
+        return DisplayAccess.get_brightness()
 
     def calc_iteration(self, iter_num):
         pass
