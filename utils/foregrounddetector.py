@@ -16,26 +16,26 @@ class ForegroundDetector(object):
     _resources = ResourceAccess()
     _displayed_uids = []
 
-    @staticmethod
-    def get_foreground_uid():
+    @classmethod
+    def get_foreground_uid(cls):
 
-        last_displayed_ids = self._displayed_uids
+        last_displayed_uids = cls._displayed_uids
 
         # Figure out
-        apps = self._resources.get_running_apps()
+        apps = cls._resources.get_running_apps()
 
         # Find a valid app now. Hopefully there is only one. If there are non,
         # return system.
         #
         front_uids = [SystemInfo.get_uid_for_pid(app.pid) for app in
-                apps if app.importance == self.IMPORTANCE_FOREGROUND]
+                apps if app.importance == cls.IMPORTANCE_FOREGROUND]
 
-        self._displayed_uids.sort()
+        cls._displayed_uids.sort()
 
         uid1 = uid2 = None
 
         # Find an enter/exit front transition between iterations
-        for (uid1, uid2) in zip(last_displayed_uids, self._displayed_uids):
+        for (uid1, uid2) in zip(last_displayed_uids, cls._displayed_uids):
             if uid1 == uid2:
                 continue
             elif uid1 < uid2:
@@ -46,7 +46,7 @@ class ForegroundDetector(object):
         # Find a valid application. Hopefully there is only one. If there is
         # none, return system. If there are several, return the onde with
         # highest UID.
-        if uid_enter == uid_exit and uid_enter in self._displayed_uids:
+        if uid_enter == uid_exit and uid_enter in cls._displayed_uids:
             return uid_enter
 
         return SystemInfo.AID_SYSTEM
