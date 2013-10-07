@@ -7,13 +7,13 @@ except ImportError:
 
 from utils.hardware import Hardware
 
-from monitors.audio import AudioData
-from monitors.gps import GPSData
+from monitors.audio import Audio
+from monitors.cpu import CPU
+from monitors.gps import GPS
 from monitors.sensors import Sensors
-from monitors.screen.lcd import LCDData
-from monitors.screen.oled import OLEDData
-from monitors.threeg import ThreeG, ThreeGData
-from monitors.wifi import Wifi, WifiData
+from monitors.screen.lcd import LCD
+from monitors.threeg import ThreeG
+from monitors.wifi import Wifi
 from phones.device import Device
 
 from utils.hardware import Hardware
