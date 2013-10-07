@@ -62,8 +62,8 @@ class Audio(DeviceMonitor):
             self._uid_states.setdefault(uid, uid_usage)
 
     def __on_stop_media(self, uid, id_):
-        with _uidstate_lock:
-            del(_uid_states[uid])
+        with self._uidstate_lock:
+            del(self._uid_states[uid])
 
     def calc_iteration(self, iter_num):
         """ Return power usage of each application using audio after one
