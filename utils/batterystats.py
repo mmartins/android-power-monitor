@@ -86,7 +86,7 @@ class BatteryStats(object):
 
         try:
             with open(filename) as fp:
-                full_capacity = int(fp.read()).strip()
+                full_capacity = int(fp.read().strip())
         except (IOError, ValueError):
             return 0
 
