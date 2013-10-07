@@ -137,7 +137,7 @@ class BasePowerCalculator(object):
             if cpu_data.freq > Constants.CPU_PWR_RATIOS[-1]:
                 freq = Constants.CPU_FREQS[-1]
 
-            i = _upper_bound(freq, Constants.CPU_FREQS)
+            i = cls._upper_bound(freq, Constants.CPU_FREQS)
 
             ratio = (Constants.CPU_PWR_RATIOS[i-1] +
                 (Constants.CPU_PWR_RATIOS[i] - Constants.CPU_PWR_RATIOS[i-1]) /
@@ -153,7 +153,7 @@ class BasePowerCalculator(object):
     @classmethod
     def get_gps_power(cls, gps_data):
         res = sum(time * power for time, power in zip(gps_data.state_times,
-                Constants.GPS_PWR_RATIOS))
+                Constants.GPS_STATE_PWRS))
         return res
 
     @classmethod
@@ -173,7 +173,8 @@ class BasePowerCalculator(object):
                 # Find two nearest speed/ratio pairs and linearly interpolate
                 # the ratio for this link speed
 
-                i = _upper_bound(wifi_data.speed, Constants.WIFI_LINK_SPEEDS)
+                i = cls._upper_bound(wifi_data.speed, Constants
+                .WIFI_LINK_SPEEDS)
                 if i == 0:
                     i += 1
                 elif i == len(Constants.WIFI_LINK_SPEEDS):
@@ -194,7 +195,7 @@ class BasePowerCalculator(object):
             return Constants.get_3g_idle_power(threeg_data.provider)
         if threeg_data.pwr_state == ThreeG.POWER_STATE_FACH:
             return Constants.get_3g_fach_power(threeg_data.provider)
-        if threeg_data.pwr_state == ThreeG.PO.POWER_STATE_DCH:
+        if threeg_data.pwr_state == ThreeG.POWER_STATE_DCH:
             return Constants.get_3g_dch_power(threeg_data.provider)
 
         return 0
