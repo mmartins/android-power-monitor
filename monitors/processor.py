@@ -27,7 +27,7 @@ class Processor(DeviceMonitor):
         minmax = data.split("-")
 
         if len(minmax) > 0 and minmax[-1].isdigit():
-            return int(minmax[-1] + 1)
+            return int(minmax[-1]) + 1
 
         return 0
 
