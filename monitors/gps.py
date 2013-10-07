@@ -49,7 +49,7 @@ class GPS(DeviceMonitor):
     NPOWER_STATES = 3
 
     def __init__(self, devconstants):
-        super.__init__(GPS, self).__init__(Hardware.GPS, devconstants)
+        super(GPS, self).__init__(Hardware.GPS, devconstants)
         self.uid_states = {}
         self._sleep_time = round(1000.0 * devconstants.GPS_SLEEP_TIME)
         self._hook_method = 0
