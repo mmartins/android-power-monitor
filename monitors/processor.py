@@ -21,7 +21,7 @@ class Processor(DeviceMonitor):
         """ Return number of CPU cores from sysfs. Format should be "0-N" or
         "0" if read successfully. Return zero cores on failures """
 
-        with open(self.SYSFS_CPU_FILE) as fp:
+        with open(cls.SYSFS_CPU_FILE) as fp:
             data = fp.read().strip()
 
         minmax = data.split("-")
@@ -34,6 +34,6 @@ class Processor(DeviceMonitor):
     def calc_iteration(self, iter_num):
         total = IterationData()
         # TODO: Rewrite below using FP
-        for cpu in cpus:
+        for cpu in self.cpus:
             total.add(cpu.calc_iteration(iter_num))
         return total
