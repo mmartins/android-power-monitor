@@ -11,6 +11,7 @@ from phones.base import Constants as BaseConstants, BaseDevice
 from phones.base import BasePowerCalculator
 from utils.hardware import Hardware
 
+
 class Constants(BaseConstants):
 
     BATTERY_VOLTAGE = 3.7
@@ -64,7 +65,7 @@ class Constants(BaseConstants):
         if provider == cls.PROVIDER_TMOBILE:
             return 6
         if provider == cls.PROVIDER_ATT:
-            5
+            return 5
 
         # Not sure if this refers Sprinter and Verizon?
         return 4
