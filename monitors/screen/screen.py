@@ -43,7 +43,7 @@ class Screen(PowerMonitor):
             if intent.getAction() == 'screen_on':
                 self.screen_on = True
             elif intent.getAction() == 'screen_off':
-                self.screen_off = False
+                self.screen_on = False
 
     @classmethod
     def get_display_brightness(cls):
