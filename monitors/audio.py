@@ -11,6 +11,7 @@ except ImportError:
     from utils.androidhelpers.audio import AudioAccess
 
 from monitors.devicemonitor import DeviceMonitor
+from services.iterationdata import IterationData
 from services.usagedata import UsageData
 from utils.hardware import Hardware
 from utils.systeminfo import SystemInfo
@@ -45,7 +46,7 @@ class Audio(DeviceMonitor):
     def _on_exit(self):
         if self.has_uid_information:
             self._event_server.remove_hook()
-        super.(Audio, self)._on_exit()
+        super(Audio, self)._on_exit()
 
     def __on_system_media_call(self, uid):
         self._sys_uid = uid
