@@ -34,9 +34,9 @@ class OLED(Screen):
     def _setup_fb_samples(self):
         """ Collect samples from framebuffer for averaging pixel color impact
         on power usage. """
-        if os.path.is_file("/dev/fb0"):
+        if os.path.isfile("/dev/fb0"):
             self._fb_file = "/dev/fb0"
-        elif os.path.is_file("/dev/graphics/fb0"):
+        elif os.path.isfile("/dev/graphics/fb0"):
             self._fb_file = "/dev/graphics/fb0"
 
         # TODO: Change permission to read file
@@ -47,7 +47,7 @@ class OLED(Screen):
                     for i in xrange(self.NSAMPLES):
                         self._fb_samples.append((factor * i) + random.randint(0, factor))
             except IOError as (err, strerr):
-                self.logger,warn("Can't read framebuffer: {0}".format(strerr))
+                self.logger.warn("Can't read framebuffer: {0}".format(strerr))
                 pass
 
     def calc_iteration(self, iter_num):
@@ -90,7 +90,7 @@ class OLED(Screen):
                                 self.BLUE_PWR * (blue*blue) -
                                 self.MODULATION_PWR * (sum_colors*sum_colors))
             except IOError as (errno, strerr):
-                self.logger.warn("Can't read framebuffer {0}".format(sterr))
+                self.logger.warn("Can't read framebuffer {0}".format(strerr))
                 px_pwr = -1
 
             if px_pwr >= 0.0:
