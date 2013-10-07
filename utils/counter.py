@@ -2,8 +2,8 @@
 
 import time
 
-class Counter(object):
 
+class Counter(object):
     COUNTER_MINUTE = 0
     COUNTER_HOUR = 1
     COUNTER_DAY = 2
@@ -15,17 +15,17 @@ class Counter(object):
     _COUNTER_DURATION_DAY = _COUNTER_DURATION_HOUR * 24
 
     COUNTER_DURATIONS = [_COUNTER_DURATION_MINUTE, _COUNTER_DURATION_HOUR,
-            _COUNTER_DURATION_DAY, -1]
+                         _COUNTER_DURATION_DAY, -1]
 
     def __init__(self):
         self._total = 0
         self._start_time = round(time.time())
 
         self._counters = {
-                self.COUNTER_MINUTE : _BucketCounter(),
-                self.COUNTER_HOUR : _BucketCounter(),
-                self.COUNTER_DAY : _BucketCounter(),
-                self.COUNTER_TOTAL : _BucketCounter(),
+            self.COUNTER_MINUTE: _BucketCounter(),
+            self.COUNTER_HOUR: _BucketCounter(),
+            self.COUNTER_DAY: _BucketCounter(),
+            self.COUNTER_TOTAL: _BucketCounter(),
         }
 
     def add(self, value):
@@ -33,7 +33,7 @@ class Counter(object):
         now = round(time.time()) - self._start_time
         for type_, counter in self._counters:
             counter.add(value, now * _BucketCounter.BUCKET_NUM /
-                    Counter.COUNTER_DURATIONS[type_])
+                               Counter.COUNTER_DURATIONS[type_])
 
     def get(self, type_):
         assert (Counter.COUNTER_MINUTE <= type_ <= Counter.COUNTER_TOTAL)
@@ -43,15 +43,16 @@ class Counter(object):
 
         now = round(time.time()) - self._start_time
         timestamp = (now * _BucketCounter.BUCKET_NUM /
-                Counter.COUNTER_DURATIONS[type_])
+                     Counter.COUNTER_DURATIONS[type_])
         progress = ((1.0 * now * _BucketCounter.BUCKET_NUM %
-                Counter.COUNTER_DURATIONS[type_]) /
-                Counter.COUNTER_DURATIONS[type_])
+                     Counter.COUNTER_DURATIONS[type_]) /
+                    Counter.COUNTER_DURATIONS[type_])
         return self._counters[type_].get(timestamp, progress)
 
+
 class _BucketCounter(object):
-    '''Keep track of data added to timeline for later syncing and summing. Each
-    bucket holds a counter for a given second'''
+    """Keep track of data added to timeline for later syncing and summing. Each
+    bucket holds a counter for a given second"""
 
     BUCKET_NUM = 60         # Hold up to 60 seconds of data
 
@@ -63,8 +64,8 @@ class _BucketCounter(object):
         self._dropped = 0
 
     def _sync(self, timestamp):
-        '''Synchronize time-based buckets to given timestamp, removing old
-        data'''
+        """Synchronize time-based buckets to given timestamp, removing old
+        data"""
         self._dropped = 0
 
         # It's been a while since we synchronized. Let's start freshly new.
@@ -87,7 +88,7 @@ class _BucketCounter(object):
                     self._base_idx += 1
 
     def add(self, value, timestamp):
-        '''Add value to bucket corresponding to timestamp'''
+        """Add value to bucket corresponding to timestamp"""
         self._sync(timestamp)
         self._total += value
         idx = (self._base_idx + timestamp - self._base)
