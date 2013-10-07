@@ -152,6 +152,8 @@ class ThreeGState(object):
 
     def __init__(self, dch_fach_time, fach_idle_time, txqueue_size,
             rxqueue_size):
+        self.tx_pkts = 0
+        self.rx_pkts = 0
         self.tx_bytes = 0
         self.rx_bytes = 0
         self.delta_pkts = 0
