@@ -51,10 +51,10 @@ class SystemInfo(object):
 
     logger = logging.getLogger("SystemInfo")
 
-    @staticmethod
-    def get_uid_for_pid(pid):
+    @classmethod
+    def get_uid_for_pid(cls, pid):
         try:
-            with open(UID_STATUS_MASK.format(pid)) as fp:
+            with open(cls.UID_STATUS_MASK.format(pid)) as fp:
                 data = fp.readlines(6)
                 if data[6].startswith("Uid"):
                     uid_str = data[6].split(":")[1].split()[0]
@@ -62,46 +62,47 @@ class SystemInfo(object):
         except IOError, ValueError:
             pass
 
-        logger.error("Failed to read UID for PID {0}".format(pid))
+        cls.logger.error("Failed to read UID for PID {0}".format(pid))
 
         return -1
 
-    @staticmethod
-    def get_running_pids():
+    @classmethod
+    def get_running_pids(cls):
         # Assume all files in PROC_DIR which are numbers represent pids
         # WARNING: isdigit() only works with non-negative integers
-        pids = [int(file_) for file_ in os.listdir(PROC_DIR) if file_.isdigit()]
+        pids = [int(file_) for file_ in os.listdir(cls.PROC_DIR) if file_
+        .isdigit()]
         return pids
 
-    @staticmethod
-    def get_uids():
-        return [int(uid) for uid in os.listdir(UID_STATS_DIR)]
+    @classmethod
+    def get_uids(cls):
+        return [int(uid) for uid in os.listdir(cls.UID_STATS_DIR)]
 
-    @staticmethod
-    def get_pid_usr_sys_times(pid):
+    @classmethod
+    def get_pid_usr_sys_times(cls, pid):
         """ times should contain two elements: times[INDEX_USR_TIME] constains
         user time for pid and times[INDEX_SYS_TIME] contains sys time for pid
         """
         try:
-            with open(PID_STAT_MASK.format(pid)) as fp:
+            with open(cls.PID_STAT_MASK.format(pid)) as fp:
                 data = fp.read().split()
                 return [int(data[13]), int(data[14])]
         except (IOError, IndexError, ValueError):
             pass
 
-        logger.error("Failed to read CPU time for PID {0}".format(pid))
+        cls.logger.error("Failed to read CPU time for PID {0}".format(pid))
 
         return []
 
-    @staticmethod
-    def get_usr_sys_total_times(cpu):
+    @classmethod
+    def get_usr_sys_total_times(cls, cpu):
         """ times should contain seven elements. times[INDEX_USR_TIME]
         containts total user time, times[INDEX_SYS_TIME] contains total sys
         time, and times[INDEX_TOTAL_TIME] contains total time (including idle
         cycles)
         """
         try:
-            with open(PROC_STAT_FILE) as fp:
+            with open(cls.PROC_STAT_FILE) as fp:
                 data = fp.readlines(cpu+1)
                 if data[cpu+1].startswith("cpu"):
                     times = data[cpu+1].split()
@@ -113,19 +114,19 @@ class SystemInfo(object):
         except (IOError, IndexError, ValueError):
             pass
 
-        logger.error("Failed to read CPU time")
+        cls.logger.error("Failed to read CPU time")
 
         return []
 
-    @staticmethod
-    def get_mem_info():
+    @classmethod
+    def get_mem_info(cls):
         """ mem should contain 4 elements. mem[INDEX_MEM_TOTAL] contains total
         memory available (Kb), mem[INDEX_MEM_FREE] contains amount of free
         memory (Kb), mem[INDEX_MEM_BUFFERS] contains size of kernel buffers
         (Kb), and mem[INDEX_MEM_CACHED] contains size of kernel caches (Kb)
         """
         try:
-            with open(PROC_MEM_FILE) as fp:
+            with open(cls.PROC_MEM_FILE) as fp:
                 data = fp.readlines(4)
                 if data[0].startswith("MemTotal"):
                     total = int(data[0].split()[1])
@@ -140,6 +141,6 @@ class SystemInfo(object):
         except (IOError, IndexError, ValueError):
             pass
 
-        logger.error("Failed to read memory info")
+        cls.logger.error("Failed to read memory info")
 
         return []
