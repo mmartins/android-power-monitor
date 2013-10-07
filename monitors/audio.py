@@ -16,7 +16,7 @@ from services.usagedata import UsageData
 from utils.hardware import Hardware
 from utils.systeminfo import SystemInfo
 
-import threading.Lock
+import threading
 
 class Audio(DeviceMonitor):
 
