@@ -9,7 +9,7 @@ class PowerBuffer(object):
         self.uid_powers = {}
 
     def add_power(self, uid, iter_num, power):
-        ''' Contract: iteration should only increase accross adds'''
+        """Contract: iteration should only increase accross adds"""
 
         uid_power = self.uid_powers.get(uid, self._UidPower())
         uid_power.count.add(1)
