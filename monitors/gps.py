@@ -7,23 +7,23 @@ try:
 except ImportError:
     from utils.androidhelpers.build import Build
 try:
-    from utils.androidhelpers.gps import GpsListener
+    from utils.androidhelpers.gps import GPSListener
 except ImportError:
-    from libs.gps import GpsListener
+    from libs.gps import GPSListener
 try:
     from libs.notification import NotificationProxy
 except ImportError:
     from utils.androidhelpers.notification import NotificationProxy
 
-from android.broadcast import BroadcastReceiver
 from monitors.devicemonitor import DeviceMonitor
 from services.iterationdata import IterationData
-from services.notification import NotificationService
 from services.usagedata import UsageData
 from utils.hardware import Hardware
+from utils.systeminfo import SystemInfo
 
 import logging
 import threading
+import time
 
 class GPS(DeviceMonitor):
 
@@ -114,7 +114,7 @@ class GPS(DeviceMonitor):
         # notifications, let's just use a timer and simulate the state of
         # the GPS instead
 
-        if ((self._hook_method & self.HOOK_NOTIFICATIONS == 0):
+        if self._hook_method & self.HOOK_NOTIFICATIONS == 0:
             self._hook_method |= self.HOOK_TIMER
 
     def __on_start_wakelock(self, uid, name, lock_type):
