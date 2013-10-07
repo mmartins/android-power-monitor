@@ -7,6 +7,7 @@ except ImportError:
     from utils.androidhelpers.wifi import Wifi
 
 from monitors.devicemonitor import DeviceMonitor
+from services.iterationdata import IterationData
 from services.usagedata import UsageData
 from utils.hardware import Hardware
 from utils.sysfs import Node
