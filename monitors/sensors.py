@@ -11,13 +11,14 @@ try:
 except ImportError:
     from utils.androidhelpers.sensors import SensorAccess
 from monitors.devicemonitor import DeviceMonitor
+from services.iterationdata import IterationData
 from services.usagedata import UsageData
 from utils.hardware import Hardware
 
 import threading
 import time
 
-class Sensors(PowerMonitor):
+class Sensors(DeviceMonitor):
 
     SENSORS = SensorAccess.get_sensors().keys()
 
