@@ -79,7 +79,7 @@ class Audio(DeviceMonitor):
 
             for usage in self._uid_states.values():
                 if (usage.uid != uid):
-                    result.set_uid_usage(usage.proxy_uid, AudioUsage(true))
+                    result.set_uid_usage(usage.proxy_uid, AudioUsage(True))
                 uid = usage.uid
 
         return result
