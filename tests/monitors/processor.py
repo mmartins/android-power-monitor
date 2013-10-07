@@ -21,7 +21,7 @@ class TestProcessor(unittest):
         open(Processor.SYSFS_CPU_FILE).AndReturn('0')
         self.m.ReplayAll()
 
-        self.assertEqual(Processor._get_num_cpus, 0)
+        self.assertEqual(Processor._get_num_cpus(), 0)
 
         self.m.VerifyAll()
 
@@ -30,7 +30,7 @@ class TestProcessor(unittest):
         open(Processor.SYSFS_CPU_FILE).AndReturn('0')
         self.m.ReplayAll()
 
-        self.assertEqual(Processor._get_num_cpus, 1)
+        self.assertEqual(Processor._get_num_cpus(), 1)
 
         self.m.VerifyAll()
 
@@ -39,7 +39,7 @@ class TestProcessor(unittest):
         open(Processor.SYSFS_CPU_FILE).AndReturn('0-2')
         self.m.ReplayAll()
 
-        self.assertEqual(Processor._get_nums_cpus, 3)
+        self.assertEqual(Processor._get_nums_cpus(), 3)
 
         self.m.VerifyAll()
 
