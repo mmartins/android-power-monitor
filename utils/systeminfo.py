@@ -59,7 +59,7 @@ class SystemInfo(object):
                 if data[6].startswith("Uid"):
                     uid_str = data[6].split(":")[1].split()[0]
                     return int(uid_str)
-        except IOError, ValueError:
+        except IOError:
             pass
 
         cls.logger.error("Failed to read UID for PID {0}".format(pid))
