@@ -137,7 +137,7 @@ class SystemInfo(object):
                 if data[3].startswith("Cached"):
                     cached = int(data[3].split()[1])
 
-                return [total, free, buffers, caches]
+                return [data, free, buffers, cached]
         except (IOError, IndexError, ValueError):
             pass
 
