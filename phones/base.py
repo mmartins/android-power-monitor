@@ -58,7 +58,7 @@ class Constants(object):
         """ Find the two closest CPU frequencies and linearly interpolate the
         power ratio for current freq
         """
-        if not cpu_data or len(Constants.CPU_PWR_RATIONS) == 0:
+        if not cpu_data or len(Constants.CPU_PWR_RATIOS) == 0:
             return 0
         elif len(Constants.CPU_PWR_RATIOS) == 1:
             ratio = Constants.CPU_PWR_RATIOS[0]
@@ -85,7 +85,7 @@ class Constants(object):
     @classmethod
     def get_gps_power(cls, gps_data):
         res = sum(time * power for time, power in zip(gps_data.state_times,
-                Constants.GPS_PWR_RATIOS))
+                Constants.GPS_STATE_PWRS))
         return res
 
     @classmethod
@@ -97,23 +97,24 @@ class Constants(object):
         if wifi_data.pwr_state == Wifi.POWER_STATE_LOW:
             return Constants.WIFI_LOW_PWR
         if wifi_data.pwr_state == Wifi.POWER_STATE_HIGH:
-            if len(Constants.WIFI_SPEEDS) == 1:
+            if len(Constants.WIFI_LINK_SPEEDS) == 1:
                 # If there is only one set speed we have to use its ratio as we
                 # have nothing else to use
-                ratio = WIFI_PWR_RATIOS[0]
+                ratio = Constants.WIFI_LINK_RATIOS[0]
             else:
                 # Find two nearest speed/ratio pairs and linearly interpolate
                 # the ratio for this link speed
 
-                i = _upper_bound(wifi_data.speed, Constants.WIFI_SPEEDS)
+                i = _upper_bound(wifi_data.speed, Constants.WIFI_LINK_SPEEDS)
                 if i == 0:
                     i += 1
-                elif i == len(Constants.WIFI_SPEEDS):
+                elif i == len(Constants.WIFI_LINK_SPEEDS):
                     i -= 1
 
-                ratio = (Constants.WIFI_SPEEDS[i-1] +
-                        (Constants.WIFI_SPEEDS[i] - Constants.WIFI_SPEEDS[i-1])
-                        * (wifi_data.speed - Constants.WIFI_SPEEDS[i-1]))
+                ratio = (Constants.WIFI_LINK_SPEEDS[i-1] +
+                        (Constants.WIFI_LINK_SPEEDS[i] -
+                         Constants.WIFI_LINK_SPEEDS[i-1]) *
+                        (wifi_data.speed - Constants.WIFI_LINK_SPEEDS[i-1]))
 
         return max(0, Constants.WIFI_HIGH_PWR + ratio * wifi_data.tx_rate)
 
@@ -166,7 +167,7 @@ class Constants(object):
     def _get_sensor_pwr_ratios(cls):
         powers = {}
 
-        for name, power in SensorsAccess.get_sensor():
+        for name, power in SensorsAccess.get_sensors():
             powers[name] = power * Constants.BATTERY_VOLTAGE
 
         return powers
@@ -193,18 +194,18 @@ class BaseDevice(Device):
             Hardware.WIFI: Wifi(Constants),
             Hardware.THREEG: ThreeG(Constants),
             Hardware.GPS: GPS(Constants),
-            Hardawre.AUDIO: Audio(Constants),
+            Hardware.AUDIO: Audio(Constants),
             Hardware.SENSORS: Sensors(Constants),
     }
 
     power_function = {
-            Hardware.CPU: PowerCalculator.get_cpu_power,
-            Hardware.LCD: PowerCalculator.get_lcd_power,
-            Hardware.WIFI: PowerCalculator.get_wifi_power,
-            Hardware.THREEG: PowerCalculator.get_3g_power,
-            Hardware.GPS: PowerCalculator.get_gps_power,
-            Hardware.AUDIO: PowerCalculator.get_audio_power,
-            Hardware.SENSORS: PowerCalculator.get_sensor_power,
+            Hardware.CPU: BasePowerCalculator.get_cpu_power,
+            Hardware.LCD: BasePowerCalculator.get_lcd_power,
+            Hardware.WIFI: BasePowerCalculator.get_wifi_power,
+            Hardware.THREEG: BasePowerCalculator.get_3g_power,
+            Hardware.GPS: BasePowerCalculator.get_gps_power,
+            Hardware.AUDIO: BasePowerCalculator.get_audio_power,
+            Hardware.SENSORS: BasePowerCalculator.get_sensor_power,
     }
 
 class BasePowerCalculator(object):
@@ -264,20 +265,21 @@ class BasePowerCalculator(object):
             if len(Constants.WIFI_SPEEDS) == 1:
                 # If there is only one set speed we have to use its ratio as we
                 # have nothing else to use
-                ratio = WIFI_PWR_RATIOS[0]
+                ratio = cls.WIFI_PWR_RATIOS[0]
             else:
                 # Find two nearest speed/ratio pairs and linearly interpolate
                 # the ratio for this link speed
 
-                i = _upper_bound(wifi_data.speed, Constants.WIFI_SPEEDS)
+                i = _upper_bound(wifi_data.speed, Constants.WIFI_LINK_SPEEDS)
                 if i == 0:
                     i += 1
-                elif i == len(Constants.WIFI_SPEEDS):
+                elif i == len(Constants.WIFI_LINK_SPEEDS):
                     i -= 1
 
-                ratio = (Constants.WIFI_SPEEDS[i-1] +
-                        (Constants.WIFI_SPEEDS[i] - Constants.WIFI_SPEEDS[i-1])
-                        * (wifi_data.speed - Constants.WIFI_SPEEDS[i-1]))
+                ratio = (Constants.WIFI_LINK_SPEEDS[i-1] +
+                        (Constants.WIFI_LINK_SPEEDS[i] -
+                         Constants.WIFI_SPEEDS[i-1]) *
+                        (wifi_data.speed - Constants.WIFI_LINK_SPEEDS[i-1]))
 
         return max(0, Constants.WIFI_HIGH_PWR + ratio * wifi_data.tx_rate)
 
