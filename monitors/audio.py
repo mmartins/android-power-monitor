@@ -110,13 +110,13 @@ class MediaUsage(object):
         return (self.uid != obj.uid) or (self.id_ != self.id_)
 
     def __lt__(self, obj):
-        return (self.uid < obj.uid) or (self.id_ < uid_usage.id_)
+        return (self.uid < obj.uid) or (self.id_ < obj.id_)
 
     def __gt__(self, obj):
-        return (self.uid > obj.uid) or (self.id_ < uid_usage.id_)
+        return (self.uid > obj.uid) or (self.id_ < obj.id_)
 
     def __le__(self, obj):
-        return (self.uid <= obj.uid) or (self.id_ <= uid_usage.id_)
+        return (self.uid <= obj.uid) or (self.id_ <= obj.id_)
 
     def __ge__(self, obj):
-        return (self.uid >= obj.uid) or (self.id_ >= uid_usage.id_)
+        return (self.uid >= obj.uid) or (self.id_ >= obj.id_)
