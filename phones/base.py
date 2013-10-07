@@ -43,7 +43,17 @@ class Constants(object):
     WIFI_HIGHLOW_PKTBOUND = 0
     WIFI_LINK_RATIOS = []
     WIFI_LINK_SPEEDS = []
-    SENSOR_PWR_RATIOS = self._get_sensor_pwr_ratios()
+
+    @classmethod
+    def _get_sensor_pwr_ratios(cls):
+        powers = {}
+
+        for name, power in SensorsAccess.get_sensors():
+            powers[name] = power * Constants.BATTERY_VOLTAGE
+
+        return powers
+
+    SENSOR_PWR_RATIOS = _get_sensor_pwr_ratios()
 
     # The following methods are too specific and need to be implemented
     # according to the device in question
@@ -79,15 +89,6 @@ class Constants(object):
     @classmethod
     def get_max_power(cls, monitor_name):
         raise NotImplementedError("Constants shouldn't be instantiated directly")
-
-    @classmethod
-    def _get_sensor_pwr_ratios(cls):
-        powers = {}
-
-        for name, power in SensorsAccess.get_sensors():
-            powers[name] = power * Constants.BATTERY_VOLTAGE
-
-        return powers
 
 
 class BaseDevice(Device):
