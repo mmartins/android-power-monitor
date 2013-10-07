@@ -21,7 +21,7 @@ import time
 class ThreeG(DeviceMonitor):
     POWER_STATE_IDLE = 0
     POWER_STATE_FACH = 1
-    POWER_STATE_HIGH = 2
+    POWER_STATE_DCH = 2
 
     NET_STATISTIC_MASK = "/sys/devices/virtual/net/{0}/statistics"
     RX_PKT_MASK = "/sys/devices/virtual/net/{0}/statistics/rx_packets"
