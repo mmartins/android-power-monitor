@@ -23,9 +23,9 @@ class Wifi(DeviceMonitor):
     POWER_STATE_HIGH = 1
 
     NET_STATISTICS_MASK = "/sys/devices/virtual/net/{0}/statistics"
-    UID_STATS_FOLDER = "/proc/uid_state/"
-    UID_TX_BYTE_MASK = UID_STATS_FOLDER.join("{0}/tcp_snd")
-    UID_RX_BYTE_MASK = UID_STATS_FOLDER.join("{0}/tcp_rcv")
+    UID_STATS_FOLDER = "/proc/uid_stat/"
+    UID_TX_BYTE_MASK = UID_STATS_FOLDER + "{0}/tcp_snd"
+    UID_RX_BYTE_MASK = UID_STATS_FOLDER + "{0}/tcp_rcv"
 
     def __init__(self, devconstants):
         super(Wifi, self).__init__(Hardware.WIFI, devconstants)
@@ -56,7 +56,7 @@ class Wifi(DeviceMonitor):
 
             self._state.interface_off()
             self._uid_states.clear()
-            self._speed = 0
+            self._speed = None
 
             result.set_sys_usage(WifiUsage())
             return result
@@ -75,22 +75,28 @@ class Wifi(DeviceMonitor):
         # structure from WifiManager is a little expensive. This isn't really
         # something that is likely to change frequently anyway
 
-        if (iter_num % 15 == 0) or (self._speed == 0):
+        if (iter_num % 15 == 0) or not self._speed:
             self._speed = self._wifi.get_speed()
 
         if self._state.is_initialized():
-            self._state.update(tx_pkts, rx_pkts, tx_bytes, rx_bytes)
+            result.set_sys_usage(WifiUsage(self._state.delta_pkts,
+                                           self._state.delta_tx_bytes,
+                                           self._state.delta_rx_bytes,
+                                           self._state.tx_rate, self._speed,
+                                           self._state.pwr_state))
+
+        self._state.update(tx_pkts, rx_pkts, tx_bytes, rx_bytes)
 
         uids = SystemInfo.get_uids()
 
         if uids is not None:
             for uid in uids:
                 if uid < 0:
-                    break
+                    continue
 
                 uid_state = self._uid_states.get(uid, None)
 
-                if uid_state is None:
+                if not uid_state:
                     uid_state = WifiState(self._constants.WIFI_HIGHLOW_PKTBOUND,
                                           self._constants.WIFI_LOWHIGH_PKTBOUND)
                     self._uid_states[uid] = uid_state
@@ -129,16 +135,15 @@ class Wifi(DeviceMonitor):
                               (rx_bytes != uid_state.rx_bytes))
 
                     uid_state.update((self._state.tx_pkts + tx_pkts),
-                                     (self._state.rx_pkts + rx_pkts), tx_pkts,
-                                     rx_pkts)
+                                     (self._state.rx_pkts + rx_pkts), tx_bytes,
+                                     rx_bytes)
 
                     if active:
-                        # TODO: Fix invalid reference to pkts
-                        usage = WifiUsage(uid_state.pkts,
+                        usage = WifiUsage(uid_state.delta_pkts,
                                           uid_state.delta_tx_bytes,
                                           uid_state.delta_rx_bytes,
                                           uid_state.tx_rate,
-                                          uid_state.speed, uid_state.pwr_state)
+                                          self._speed, uid_state.pwr_state)
                         result.set_uid_usage(uid, usage)
                 else:
                     uid_state.update(0, 0, tx_bytes, rx_bytes)
