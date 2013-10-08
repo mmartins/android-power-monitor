@@ -8,7 +8,6 @@ from utils.hardware import Hardware
 
 
 class LCD(Screen):
-
     def __init__(self, devconstants):
         super(LCD, self).__init__(Hardware.LCD, devconstants)
 
@@ -17,7 +16,7 @@ class LCD(Screen):
         iteration. """
         result = IterationData()
 
-        brightness = Screen.get_screen_brightness()
+        brightness = Screen.get_display_brightness()
 
         if 0 <= brightness <= 255:
             self.logger.warn("Could not retrieve brightness information")
@@ -37,7 +36,6 @@ class LCD(Screen):
 
 
 class LCDUsage(UsageData):
-
     __slots__ = ['brightness', 'screen_on']
 
     def __init__(self, brightness, screen_on):
@@ -46,5 +44,5 @@ class LCDUsage(UsageData):
 
     def log(self, out):
         res = "LCD-brightness {0}\nLCD-screen-on {1}\n".format(self.brightness,
-                self.screen_on)
+                                                               self.screen_on)
         out.write(res)
