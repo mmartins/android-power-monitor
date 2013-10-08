@@ -18,8 +18,8 @@ from utils.hardware import Hardware
 import threading
 import time
 
-class Sensors(DeviceMonitor):
 
+class Sensors(DeviceMonitor):
     SENSORS = SensorAccess.get_sensors().keys()
 
     def __init__(self, devconstants=None):
@@ -29,8 +29,8 @@ class Sensors(DeviceMonitor):
         self._sensorslock = threading.Lock()
 
         callbacks = {
-                NotificationProxy.ON_START_SENSOR : self.__on_start_sensor,
-                NotificationProxy.ON_STOP_SENSOR : self.__on_stop_sensor
+            NotificationProxy.ON_START_SENSOR: self.__on_start_sensor,
+            NotificationProxy.ON_STOP_SENSOR: self.__on_stop_sensor
         }
 
         self.has_uid_information = True
@@ -60,7 +60,7 @@ class Sensors(DeviceMonitor):
                 result.set_uid_usage(uid, usage)
 
                 if state.started_sensors == 0:
-                    del(self._uid_states[uid])
+                    del (self._uid_states[uid])
 
         return result
 
@@ -76,8 +76,8 @@ class Sensors(DeviceMonitor):
             uid_state = self._uid_states.setdefault(uid, SensorState())
             uid_state.stop_sensor(sensor)
 
-class SensorUsage(UsageData):
 
+class SensorUsage(UsageData):
     def __init__(self):
         self.on_times = {}
 
@@ -85,11 +85,12 @@ class SensorUsage(UsageData):
         res = "Sensors-time {0}\n".format(self.on_times)
         out.write(res)
 
-class SensorState(object):
 
+class SensorState(object):
     __slots__ = ['_on', '_on_times', 'started_sensors']
 
     def __init__(self):
+        # TODO: Fix invalid reference to SENSORS
         self._on = dict.fromkeys(self.SENSORS, 0)
         self._on_times = dict.fromkeys(self.SENSORS, 0)
         self._timestamp = round(time.time())
@@ -121,7 +122,7 @@ class SensorState(object):
         times = {}
 
         for k, v in self._on_times.iteritems():
-            factor = now - self._timestamp if self._on.get(k,0) else 0
+            factor = now - self._timestamp if self._on.get(k, 0) else 0
             times[k] = (v + factor) // div
             self._on_times[k] = 0
 

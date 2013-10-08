@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 
-from monitors.audio import Audio
 from monitors.cpu import CPU
-from monitors.gps import GPS
 from monitors.screen.oled import OLED
-from monitors.sensors import Sensors
-from monitors.threeg import ThreeG
 from monitors.wifi import Wifi
 from phones.base import Constants as BaseConstants, BaseDevice
 from phones.base import BasePowerCalculator
@@ -14,7 +10,6 @@ from utils.hardware import Hardware
 
 
 class Constants(BaseConstants):
-
     BATTERY_VOLTAGE = 3.7
     MODEL_NAME = "maguro"
 
@@ -35,7 +30,7 @@ class Constants(BaseConstants):
     WIFI_HIGHLOW_PKTBOUND = None
     WIFI_LINK_RATIOS = []
     WIFI_LINK_SPEEDS = [1, 2, 5.5, 6, 9, 11, 12, 18, 24, 36, 48,
-            54]
+                        54]
     THREEG_IFACE = "rmnet0"
 
     @classmethod
@@ -72,30 +67,28 @@ class Constants(BaseConstants):
 
 
 class MaguroPhone(BaseDevice):
-
     hardware = {
-            Hardware.CPU: CPU(Constants),
-            Hardware.OLED: OLED(Constants),
-            Hardware.WIFI: Wifi(Constants),
-            Hardware.THREEG: None,
-            Hardware.GPS: None,
-            Hardware.AUDIO: None,
-            Hardware.SENSORS: None
+        Hardware.CPU: CPU(Constants),
+        Hardware.OLED: OLED(Constants),
+        Hardware.WIFI: Wifi(Constants),
+        Hardware.THREEG: None,
+        Hardware.GPS: None,
+        Hardware.AUDIO: None,
+        Hardware.SENSORS: None
     }
 
     power_function = {
-            Hardware.CPU: PowerCalculator.get_cpu_power,
-            Hardware.OLED: PowerCalculator.get_oled_power,
-            Hardware.WIFI: PowerCalculator.get_wifi_power,
-            Hardware.THREEG: None,
-            Hardware.GPS: None,
-            Hardware.AUDIO: None,
-            Hardware.SENSORS: None
+        Hardware.CPU: PowerCalculator.get_cpu_power,
+        Hardware.OLED: PowerCalculator.get_oled_power,
+        Hardware.WIFI: PowerCalculator.get_wifi_power,
+        Hardware.THREEG: None,
+        Hardware.GPS: None,
+        Hardware.AUDIO: None,
+        Hardware.SENSORS: None
     }
 
 
 class PowerCalculator(BasePowerCalculator):
-
     # Galaxy Nexus has no LCd screen
     @classmethod
     def get_lcd_power(cls, lcd_data):

@@ -5,6 +5,7 @@ from jnius import autoclass
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 Context = autoclass('android.content.Context')
 
+
 class ResourceAccess(object):
 
     __slot__ = ["activity_manager"]

@@ -10,20 +10,20 @@ from monitors.powermonitor import PowerMonitor
 
 import threading
 
-class Screen(PowerMonitor):
 
+class Screen(PowerMonitor):
     Display = DisplayAccess()
 
     BACKLIGHT_BRIGHTNESS_FILES = [
-            "/sys/class/leds/lcd-backlight/brightness",
-            "/sys/devices/virtual/leds/lcd-backlight/brightness",
-            "/sys/devices/platform/trout-backlight.0/leds/lcd-backlight/brightness"
+        "/sys/class/leds/lcd-backlight/brightness",
+        "/sys/devices/virtual/leds/lcd-backlight/brightness",
+        "/sys/devices/platform/trout-backlight.0/leds/lcd-backlight/brightness"
     ]
 
     def __init__(self, monitor_name, devconstants):
         super(Screen, self).__init__(monitor_name, devconstants)
         self.br = BroadcastReceiver(self.__on_receive, action=['screen_on',
-            'screen_off'])
+                                                               'screen_off'])
         self.width = self.Display.get_width()
         self.height = self.Display.get_height()
 

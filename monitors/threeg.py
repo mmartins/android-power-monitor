@@ -2,6 +2,7 @@
 #
 
 from __future__ import division
+
 try:
     from libs.telephony import TelephonyAccess
 except ImportError:
@@ -17,6 +18,7 @@ from utils.systeminfo import SystemInfo
 
 import os
 import time
+
 
 class ThreeG(DeviceMonitor):
     POWER_STATE_IDLE = 0
@@ -38,10 +40,10 @@ class ThreeG(DeviceMonitor):
         self.iface = devconstants.THREEG_INTERFACE
         self._provider = self._telephony.get_operator_name()
         self._state = ThreeGState(
-                devconstants.get_3g_dhcfach_time(self._provider),
-                devconstants.get_3g_fachidle_time(self._provider),
-                devconstants.get_3g_tx_queue(self._provider),
-                devconstants.get_3g_rx_queue(self._provider))
+            devconstants.get_3g_dhcfach_time(self._provider),
+            devconstants.get_3g_fachidle_time(self._provider),
+            devconstants.get_3g_tx_queue(self._provider),
+            devconstants.get_3g_rx_queue(self._provider))
 
         self._uid_states = {}
         self._sysfs = Node(self.NET_STATISTIC_MASK.format(self.iface))
@@ -58,14 +60,14 @@ class ThreeG(DeviceMonitor):
 
         # Seems like TelephonyManager.NETWORK_TYPE_HSDPA = 8
         # TODO: Actually get models for the different network types
-        if (net_type != TelephonyAccess.NETWORK_TYPE_UMTS) and (net_type !=
-                TelephonyAccess.NETWORK_TYPE_HSDPA):
-                net_type = TelephonyAccess.NETWORK_TYPE_UMTS
+        if ((net_type != TelephonyAccess.NETWORK_TYPE_UMTS) and
+                (net_type != TelephonyAccess.NETWORK_TYPE_HSDPA)):
+            net_type = TelephonyAccess.NETWORK_TYPE_UMTS
 
         net_state = self._telephony.get_state()
-        if (net_state != TelephonyAccess.DATA_CONNECTED) or (net_type !=
-                TelephonyAccess.NETWORK_TYPE_UMTS and net_type !=
-                TelephonyAccess.NETWORK_TYPE_HSDPA):
+        if ((net_state != TelephonyAccess.DATA_CONNECTED) or
+                (net_type != TelephonyAccess.NETWORK_TYPE_UMTS and net_type
+                    != TelephonyAccess.NETWORK_TYPE_HSDPA)):
             # We need to allow the real interface state to reset itself so that
             # the next update it knows it's coming back from an off state. We
             # also need to clear all UID information
@@ -89,8 +91,10 @@ class ThreeG(DeviceMonitor):
 
         if self._state.is_initialized():
             result.set_sys_usage(ThreeGUsage(self._state.delta_pkts,
-                self._state.tx_bytes, self._state.rx_bytes,
-                self._state.pwr_state, self._provider))
+                                             self._state.tx_bytes,
+                                             self._state.rx_bytes,
+                                             self._state.pwr_state,
+                                             self._provider))
 
         uids = SystemInfo.get_uids()
 
@@ -118,16 +122,17 @@ class ThreeG(DeviceMonitor):
                     if ((uid_state.tx_bytes + uid_state.rx_bytes != 0) or
                             (uid_state.pwr_state != self.POWER_STATE_IDLE)):
                         usage = ThreeGUsage(uid_state.delta_pkts,
-                                uid_state.tx_bytes, uid_state.rx_bytes,
-                                uid_state.pwr_state, self._provider)
+                                            uid_state.tx_bytes,
+                                            uid_state.rx_bytes,
+                                            uid_state.pwr_state, self._provider)
                         result.set_uid_usage(uid, usage)
                 else:
                     uid_state.update(0, 0, tx_bytes, rx_bytes)
 
         return result
 
-class ThreeGUsage(UsageData):
 
+class ThreeGUsage(UsageData):
     __slots__ = ['pwr_state', 'provider']
 
     def __init__(self, pkts, tx_bytes, rx_bytes, pwr_state, provider):
@@ -140,18 +145,19 @@ class ThreeGUsage(UsageData):
         self.provider = provider
 
     def log(self, out):
-        res = "3G-on {0}\n3G-tx_bytes {1}\n3G-rx_bytes {2}\n3G-pwr_state {3}\n3G-providerr {4}\n".format(
-                self.pkts, self.tx_bytes, self.rx_bytes, self.pwr_state,
-                self.provider)
+        res = "3G-on {0}\n3G-tx_bytes {1}\n3G-rx_bytes {2}\n3G-pwr_state " \
+              "{3}\n3G-providerr {4}\n".format(
+            self.pkts, self.tx_bytes, self.rx_bytes, self.pwr_state,
+            self.provider)
         out.write(res)
 
-class ThreeGState(object):
 
+class ThreeGState(object):
     __slots__ = ['pwr_state', '_dch_fach_time', 'fach_idle_time',
-            '_txqueue_size', '_rxqueue_size']
+                 '_txqueue_size', '_rxqueue_size']
 
     def __init__(self, dch_fach_time, fach_idle_time, txqueue_size,
-            rxqueue_size):
+                 rxqueue_size):
         self.tx_pkts = 0
         self.rx_pkts = 0
         self.tx_bytes = 0
@@ -193,6 +199,7 @@ class ThreeGState(object):
             # TODO: Make this always work
             time_mult = 1
             if PowerEstimator.ITERATION_INTERVAL % 1000 != 0:
+                # TODO: Fix invalid reference to logger
                 self.logger.warn("Cannot handle 1-sec interation intervals")
             else:
                 time_mult = 1000 // PowerEstimator.ITERATION_INTERVAL
@@ -235,5 +242,5 @@ class ThreeGState(object):
             return True
 
         # TODO: check if 10000 us the correct number (Why 10s?)
-        return (round(time.time()) - self._update_time) > min(10000,
-                self._inactive_time)
+        return ((round(time.time()) - self._update_time) >
+                min(10000, self._inactive_time))

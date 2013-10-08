@@ -4,8 +4,8 @@ from __future__ import division
 
 import os
 
-class BatteryStats(object):
 
+class BatteryStats(object):
     _SYSFS_MASK = "/sys/class/power_supply/battery/{0}"
 
     @classmethod

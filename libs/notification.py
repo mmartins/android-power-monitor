@@ -4,6 +4,7 @@ from jnius import PythonJavaClass, java_method, autoclass
 
 NotificationService = autoclass('edu.umich.PowerTutor.util.NotificationService')
 
+
 class NotificationProxy(object):
 
     ON_START_WAKELOCK = 1
@@ -55,6 +56,7 @@ class NotificationProxy(object):
     @staticmethod
     def is_available():
         return NotificationService.available()
+
 
 class NotificationReceiver(PythonJavaClass):
     __javainterfaces__ = ['edu.umich.PowerTutor.util.NotificationService$DefaultReceiver']

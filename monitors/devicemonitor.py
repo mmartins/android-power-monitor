@@ -4,6 +4,7 @@ import logging
 import threading
 import time
 
+
 class DeviceMonitor(threading.Thread):
 
     __slots__ = ["_constants", "has_uid_information"]
@@ -63,7 +64,7 @@ class DeviceMonitor(threading.Thread):
                         iter_num))
 
             # Sleep until next iteration completes
-            time.sleep(self._start_time + iter_num*self._self._iter_interval -
+            time.sleep(self._start_time + iter_num*self._iter_interval -
                     now)
 
         self._on_exit()

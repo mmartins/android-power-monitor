@@ -3,8 +3,8 @@
 import logging
 import os
 
-class SystemInfo(object):
 
+class SystemInfo(object):
     # UIDs as listed in android_filesystem_config.h
     AID_ALL = -1            # request for global information
     AID_ROOT = 0            # traditional Unix root user
@@ -70,8 +70,8 @@ class SystemInfo(object):
     def get_running_pids(cls):
         # Assume all files in PROC_DIR which are numbers represent pids
         # WARNING: isdigit() only works with non-negative integers
-        pids = [int(file_) for file_ in os.listdir(cls.PROC_DIR) if file_
-        .isdigit()]
+        pids = [int(file_)
+                for file_ in os.listdir(cls.PROC_DIR) if file_.isdigit()]
         return pids
 
     @classmethod
@@ -103,9 +103,9 @@ class SystemInfo(object):
         """
         try:
             with open(cls.PROC_STAT_FILE) as fp:
-                data = fp.readlines(cpu+1)
-                if data[cpu+1].startswith("cpu"):
-                    times = data[cpu+1].split()
+                data = fp.readlines(cpu + 1)
+                if data[cpu + 1].startswith("cpu"):
+                    times = data[cpu + 1].split()
                     # [usr, sys, total]
                     usr = int(times[1]) + int(times[2])
                     sys = int(times[2]) + int(times[6]) + int(times[7])

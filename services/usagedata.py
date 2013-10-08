@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 class UsageData(object):
     def __init__(self, usage=0):
         self.usage = usage

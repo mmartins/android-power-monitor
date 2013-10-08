@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import division
+
 try:
     from libs.wifi import WifiAccess
 except ImportError:
@@ -16,8 +17,8 @@ from utils.systeminfo import SystemInfo
 import os
 import time
 
-class Wifi(DeviceMonitor):
 
+class Wifi(DeviceMonitor):
     POWER_STATE_LOW = 0
     POWER_STATE_HIGH = 1
 
@@ -32,9 +33,10 @@ class Wifi(DeviceMonitor):
         iface_name = self._wifi.get_name()
         self.iface = iface_name if iface_name is not None else "eth0"
         self._state = WifiState(devconstants.WIFI_HIGHLOW_PKTBOUND,
-                devconstants.WIFI_LOWHIGH_PKTBOUND)
+                                devconstants.WIFI_LOWHIGH_PKTBOUND)
         self._sysfs = Node(self.NET_STATISTICS_MASK.format(self.iface))
         self._uid_states = {}
+        self._speed = 0
 
         # Test file existence
         self.has_uid_information = os.access(self.UID_STATS_FOLDER, os.F_OK)
@@ -46,9 +48,8 @@ class Wifi(DeviceMonitor):
 
         state = self._wifi.get_state()
 
-        if (state != WifiAccess.WIFI_STATE_ENABLED) or (state !=
-                WifiAccess.WIFI_STATE_DISABLING):
-
+        if ((state != WifiAccess.WIFI_STATE_ENABLED) or
+                (state != WifiAccess.WIFI_STATE_DISABLING)):
             # Allow the real interface state keeper to reset its state so that
             # the next update it knows it's coming back from an off state. We
             # also need to clear all UID information
@@ -65,8 +66,8 @@ class Wifi(DeviceMonitor):
         tx_bytes = int(self._sysfs.tx_bytes)
         rx_bytes = int(self._sysfs.rx_bytes)
 
-        if (tx_pkts == -1) or (rx_pkts == -1) or (tx_bytes == -1) or (rx_bytes
-                == -1):
+        if ((tx_pkts == -1) or (rx_pkts == -1) or (tx_bytes == -1) or
+                (rx_bytes == -1)):
             self.logger.warn("Failed to read packet and byte counts from WiFi")
             return result
 
@@ -91,7 +92,7 @@ class Wifi(DeviceMonitor):
 
                 if uid_state is None:
                     uid_state = WifiState(self._constants.WIFI_HIGHLOW_PKTBOUND,
-                            self._constants.WIFI_LOWHIGH_PKTBOUND)
+                                          self._constants.WIFI_LOWHIGH_PKTBOUND)
                     self._uid_states[uid] = uid_state
 
                 if not uid_state.is_stale():
@@ -109,14 +110,14 @@ class Wifi(DeviceMonitor):
                     self.logger.warn("Failed to read UID Tx/Rx byte counts")
                 elif uid_state.is_initialized():
                     # We only have info on bytes received but what we really
-                    # want is the number of packets receivced so we will
+                    # want is the number of packets received so we will
                     # estimate it
                     delta_tx_bytes = tx_bytes - self._state.tx_bytes
                     delta_rx_bytes = rx_bytes - self._state.rx_bytes
                     tx_pkts = int(round(delta_tx_bytes /
-                        self._state.avg_tx_pkt_size))
+                                        self._state.avg_tx_pkt_size))
                     rx_pkts = int(round(delta_rx_bytes /
-                        self._state.avg_rx_pkt_size))
+                                        self._state.avg_rx_pkt_size))
 
                     if (delta_tx_bytes > 0) and (tx_pkts == 0):
                         tx_pkts = 1
@@ -124,25 +125,28 @@ class Wifi(DeviceMonitor):
                     if (delta_rx_bytes > 0) and (rx_pkts == 0):
                         rx_pkts = 1
 
-                    active = (tx_bytes != uid_state.tx_bytes) or (rx_bytes !=
-                            uid_state.rx_bytes)
+                    active = ((tx_bytes != uid_state.tx_bytes) or
+                              (rx_bytes != uid_state.rx_bytes))
 
                     uid_state.update((self._state.tx_pkts + tx_pkts),
-                            (self._state.rx_pkts + rx_pkts), tx_pkts, rx_pkts)
+                                     (self._state.rx_pkts + rx_pkts), tx_pkts,
+                                     rx_pkts)
 
                     if active:
+                        # TODO: Fix invalid reference to pkts
                         usage = WifiUsage(uid_state.pkts,
-                                uid_state.delta_tx_bytes,
-                                uid_state.delta_rx_bytes, uid_state.tx_rate,
-                                uid_state.speed, uid_state.pwr_state)
+                                          uid_state.delta_tx_bytes,
+                                          uid_state.delta_rx_bytes,
+                                          uid_state.tx_rate,
+                                          uid_state.speed, uid_state.pwr_state)
                         result.set_uid_usage(uid, usage)
                 else:
                     uid_state.update(0, 0, tx_bytes, rx_bytes)
 
         return result
 
-class WifiUsage(UsageData):
 
+class WifiUsage(UsageData):
     __slots__ = ['speed', 'pwr_state']
 
     def __init__(self, pkts, tx_bytes, rx_bytes, tx_rate, speed, pwr_state):
@@ -154,13 +158,16 @@ class WifiUsage(UsageData):
         self.pwr_state = pwr_state
 
     def log(self, out):
-        res = "Wifi-pkts {0}\nWifi-tx_bytes {1}\nWifi-rx_bytes {2}\nWifi-tx_rate{3}\nWifi-speed {4}\nWifi-pwr_state {5}\n".format(self.delta_pkts,
-                self.tx_bytes, self.rx_bytes, self.tx_rate, self.speed,
-                self.pwr_state)
+        res = "Wifi-pkts {0}\nWifi-tx_bytes {1}\nWifi-rx_bytes {2}\nWifi-tx_" \
+              "rate{3}\nWifi-speed {4}\nWifi-pwr_state " \
+              "{5}\n".format(self.delta_pkts,
+                             self.tx_bytes, self.rx_bytes, self.tx_rate,
+                             self.speed,
+                             self.pwr_state)
         out.write(res)
 
-class WifiState(object):
 
+class WifiState(object):
     __slots__ = ['_highlow_pktbound', '_lowhigh_pktbound', 'pwr_state']
 
     def __init__(self, highlow_pktbound, lowhigh_pktbound):
@@ -202,12 +209,14 @@ class WifiState(object):
             self.delta_rx_bytes = rx_bytes - self.rx_bytes
 
             if tx_pkts != self.tx_pkts:
-                self.avg_tx_pkt_size = (0.9 * self.avg_tx_pkt_size) + (0.1 *
-                        (tx_bytes-self.tx_bytes) / (tx_pkts-self.tx_pkts))
+                self.avg_tx_pkt_size = ((0.9 * self.avg_tx_pkt_size) +
+                                        (0.1 * (tx_bytes - self.tx_bytes) /
+                                            (tx_pkts - self.tx_pkts)))
 
             if rx_pkts != self.rx_pkts:
-                self.avg_rx_pkt_size = (0.9 * self.avg_rx_pkt_size) + (0.1 *
-                        (rx_bytes-self.rx_bytes) / (rx_pkts-self.rx_pkts))
+                self.avg_rx_pkt_size = ((0.9 * self.avg_rx_pkt_size) +
+                                        (0.1 * (rx_bytes - self.rx_bytes) / (
+                                            rx_pkts - self.rx_pkts)))
 
             if (rx_bytes != self.rx_bytes) or (tx_bytes != self.tx_bytes):
                 self.inactive_time = 0
@@ -233,5 +242,5 @@ class WifiState(object):
             return True
 
         # TODO: check if 10000 is the correct number (should be 10s?)
-        return (round(time.time()) - self._update_time) > min(10000,
-                self.inactive_time)
+        return ((round(time.time()) - self._update_time) >
+                min(10000, self.inactive_time))

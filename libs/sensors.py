@@ -4,6 +4,7 @@ Sensor = autoclass('android.hardware.Sensor')
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 Context = autoclass('android.content.Context')
 
+
 class SensorsAccess(object):
 
     @staticmethod

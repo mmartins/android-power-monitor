@@ -3,6 +3,7 @@
 from usagedata import UsageData
 from utils.systeminfo import SystemInfo
 
+
 class IterationData(object):
     """ Encloses physical hardware usage data as well as estimated usage data
     for each UID that contributes a non-negligible amount of usage for this

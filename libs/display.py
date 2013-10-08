@@ -6,6 +6,7 @@ DisplayMetrics = autoclass('android.utils.DisplayMetrics')
 System = autoclass('android.provider.Settings$System')
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 
+
 class DisplayAccess(object):
 
     def __init__(self):

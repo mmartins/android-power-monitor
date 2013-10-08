@@ -8,9 +8,10 @@ except ImportError:
 from utils.systeminfo import SystemInfo
 from jnius import autoclass
 
-class ForegroundDetector(object):
 
-    RunningAppProcessInfo = autoclass('android.app.ActivityManager$RunningAppProcessInfo')
+class ForegroundDetector(object):
+    RunningAppProcessInfo = autoclass(
+        'android.app.ActivityManager$RunningAppProcessInfo')
     IMPORTANCE_FOREGROUND = RunningAppProcessInfo.IMPORTANCE_FOREGROUND
 
     _resources = ResourceAccess()
@@ -28,7 +29,7 @@ class ForegroundDetector(object):
         # return system.
         #
         front_uids = [SystemInfo.get_uid_for_pid(app.pid) for app in
-                apps if app.importance == cls.IMPORTANCE_FOREGROUND]
+                      apps if app.importance == cls.IMPORTANCE_FOREGROUND]
 
         cls._displayed_uids.sort()
 

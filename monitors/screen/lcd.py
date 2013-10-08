@@ -6,6 +6,7 @@ from services.usagedata import UsageData
 from utils.foregrounddetector import ForegroundDetector
 from utils.hardware import Hardware
 
+
 class LCD(Screen):
 
     def __init__(self, devconstants):
@@ -33,6 +34,7 @@ class LCD(Screen):
             result.set_uid_usage(uid, usage)
 
         return result
+
 
 class LCDUsage(UsageData):
 

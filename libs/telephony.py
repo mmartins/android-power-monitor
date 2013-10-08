@@ -6,6 +6,7 @@ TelephonyManager = autoclass('android.telephony.TelephonyManager')
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 Context = autoclass('android.content.Context')
 
+
 class TelephonyAccess(object):
     # From android.telephony.TelephonyManager
     # Data states

@@ -18,6 +18,7 @@ __all__ = ['sys', 'Node']
 from os import listdir
 from os.path import isdir, isfile, join, realpath
 
+
 class Node(object):
     __slots__ = ['_path_', '__dict__']
 

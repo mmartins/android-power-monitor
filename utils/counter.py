@@ -38,7 +38,7 @@ class Counter(object):
     def get(self, type_):
         assert (Counter.COUNTER_MINUTE <= type_ <= Counter.COUNTER_TOTAL)
 
-        if (type_ == Counter.COUNTER_TOTAL):
+        if type_ == Counter.COUNTER_TOTAL:
             return self._total
 
         now = round(time.time()) - self._start_time

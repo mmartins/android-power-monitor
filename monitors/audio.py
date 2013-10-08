@@ -18,8 +18,8 @@ from utils.systeminfo import SystemInfo
 
 import threading
 
-class Audio(DeviceMonitor):
 
+class Audio(DeviceMonitor):
     AudioProxy = AudioAccess()
 
     def __init__(self, devconstants=None):
@@ -30,10 +30,9 @@ class Audio(DeviceMonitor):
         self._sys_uid = None
 
         callbacks = {
-                NotificationProxy.ON_SYSTEM_MEDIA_CALL :
-                self.__on_system_media_call,
-                NotificationProxy.ON_START_MEDIA : self.__on_start_media,
-                NotificationProxy.ON_STOP_MEDIA : self.__on_stop_media,
+            NotificationProxy.ON_SYSTEM_MEDIA_CALL: self.__on_system_media_call,
+            NotificationProxy.ON_START_MEDIA: self.__on_start_media,
+            NotificationProxy.ON_STOP_MEDIA: self.__on_stop_media,
         }
 
         self.has_uid_information = NotificationProxy.is_available()
@@ -41,7 +40,6 @@ class Audio(DeviceMonitor):
         if self.has_uid_information:
             self._event_server = NotificationProxy(callbacks)
             self._event_server.add_hook()
-
 
     def _on_exit(self):
         if self.has_uid_information:
@@ -64,14 +62,15 @@ class Audio(DeviceMonitor):
 
     def __on_stop_media(self, uid, id_):
         with self._uidstate_lock:
-            del(self._uid_states[uid])
+            del (self._uid_states[uid])
 
     def calc_iteration(self, iter_num):
         """ Return power usage of each application using audio after one
         iteration. """
         result = IterationData()
 
-        audio_on = (len(self._uid_states) != 0) or (self.AudioProxy.is_music_active())
+        audio_on = (len(self._uid_states) != 0) or (
+        self.AudioProxy.is_music_active())
         result.set_sys_usage(AudioUsage(audio_on))
 
         with self._uidstate_lock:
@@ -84,8 +83,8 @@ class Audio(DeviceMonitor):
 
         return result
 
-class AudioUsage(UsageData):
 
+class AudioUsage(UsageData):
     __slots__ = ['music_on']
 
     def __init__(self, music_on):
@@ -94,8 +93,8 @@ class AudioUsage(UsageData):
     def log(self, out):
         out.write("Audio-on {0}\n".format(self.music_on))
 
-class MediaUsage(object):
 
+class MediaUsage(object):
     __slots__ = ['uid', 'id_', 'proxy_uid']
 
     def __init__(self, uid, id_):

@@ -6,8 +6,8 @@ import os
 from os.path import isdir, isfile, join, realpath
 from sysfs import Node
 
-class ProcNode(Node):
 
+class ProcNode(Node):
     def __init__(self, path='/proc'):
         self._path_ = realpath(path)
         if not self._path_.startswith('/proc/') and not '/proc' == self._path_:
@@ -17,5 +17,6 @@ class ProcNode(Node):
 
     def __repr__(self):
         return '<procfs.Node "{0}">'.format(self._path_)
+
 
 proc = ProcNode()

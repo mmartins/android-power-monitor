@@ -2,8 +2,8 @@
 
 from utils.counter import Counter
 
-class PowerBuffer(object):
 
+class PowerBuffer(object):
     def __init__(self, max_queue_size):
         self._max_queue_size = max_queue_size
         self.uid_powers = {}

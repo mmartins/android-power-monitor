@@ -6,6 +6,7 @@ PythonActivity = autoclass('org.renpy.android.PythonActivity')
 GpsStatus = autoclass('android.location.GpsStatus')
 Context = autoclass('android.content.Context')
 
+
 class GPSListener(PythonJavaClass):
     __slots__ = ['location_manager']
     __javainterfaces__ = ['android/location/LocationListener']
@@ -14,12 +15,12 @@ class GPSListener(PythonJavaClass):
         super(GPSListener, self).__init__()
         self.callback = callback
         self.location_manager = PythonActivity.mActivity.getSystemService(
-                Context.LOCATION_SERVICE)
+            Context.LOCATION_SERVICE)
 
     def start(self):
         self.location_manager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                10000, 10, self, Looper.getMainLooper())
+            LocationManager.GPS_PROVIDER,
+            10000, 10, self, Looper.getMainLooper())
 
     def stop(self):
         self.location_manager.removeUpdates(self)
@@ -40,6 +41,7 @@ class GPSListener(PythonJavaClass):
     def equals(self, obj):
         return obj.hashCode() == self.hashCode()
 
+
 class GPSStatusListener(PythonJavaClass):
     __slots__ = ['location_manager']
     __javainterfaces__ = ['android/location/GpsStatus$Listener']
@@ -49,7 +51,7 @@ class GPSStatusListener(PythonJavaClass):
         self.callback = callback
         self.gps_status = GpsStatus()
         self.location_manager = PythonActivity.mActivity.getSystemService(
-                Context.LOCATION_SERVICE)
+            Context.LOCATION_SERVICE)
 
     def start(self):
         self.location_manager.addGpsStatusListener(self)

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 class Hardware(object):
 
     CPU = "CPU"

@@ -9,7 +9,6 @@ from utils.systeminfo import SystemInfo
 
 
 class CPU(DeviceMonitor):
-
     TAG_MASK = Hardware.CPU + "{0}"
     CPUINFO_FILE = "/proc/cpuinfo"
     STAT_FILE = "/proc/stat"
@@ -39,7 +38,7 @@ class CPU(DeviceMonitor):
 
         times = SystemInfo.get_usr_sys_total_times(self.num)
 
-        if times == []:
+        if len(times) == 0:
             self.logger.warn("Failed to read CPU times")
             return result
 
@@ -52,7 +51,7 @@ class CPU(DeviceMonitor):
         # Power draw is based on usage time along with CPU frequency
         if self._state.is_initialized():
             result.set_sys_usage(CPUUsage(self._state.get_usr_perc(),
-                    self._state.get_sys_perc(), freq))
+                                          self._state.get_sys_perc(), freq))
 
         # Distribute CPU power draw during iteration among running processes.
         # CPU usage is returned by Linux using process ID.
@@ -87,14 +86,14 @@ class CPU(DeviceMonitor):
                 else:
                     times = SystemInfo.get_pid_usr_sys_times(pid)
 
-                    if times != []:
+                    if len(times) > 0:
                         usr_time = times[SystemInfo.INDEX_USR_TIME]
                         sys_time = times[SystemInfo.INDEX_SYS_TIME]
 
                         # Update slice of time used by this process based on
                         # global iteration time
                         pid_state.update(usr_time, sys_time, total_time,
-                                iter_num)
+                                         iter_num)
 
                         if not pid_state.is_initialized():
                             continue
@@ -110,12 +109,12 @@ class CPU(DeviceMonitor):
 
         # Remove processes that are no longer active
         self._pid_states = {k: v for k, v in self._pid_states.iteritems() if
-                self._pid_states[k].is_alive(iter_num)}
+                            self._pid_states[k].is_alive(iter_num)}
 
         # Collect the summed UID information
         for k, v in self._uid_states.iteritems():
             uid_usage = self._get_cpu_usage(uid_state.get_usr_perc(),
-                    uid_state.get_sys_perc(), freq)
+                                            uid_state.get_sys_perc(), freq)
             result.set_uid_usage(uid, uid_usage)
 
         return result
@@ -144,8 +143,9 @@ class CPU(DeviceMonitor):
             else:
                 lo = mid + 1
 
-        return CPUUsage(sys_perc * freq/freqs[lo], usr_perc * freq/freqs[lo],
-                freqs[lo])
+        return CPUUsage(sys_perc * freq / freqs[lo],
+                        usr_perc * freq / freqs[lo],
+                        freqs[lo])
 
     def _read_cpu_freq(self):
         """ Update the frequency of the processor core in MHz. If frequency
@@ -165,8 +165,8 @@ class CPU(DeviceMonitor):
             with open(self.CPUINFO_FILE, 'r') as fp:
                 data = fp.readlines()
                 # Core frequency at every 3 lines
-                freq_line = 3 * (self.num+1)
-                if data[freq_line-1].startswith("BogoMIPS"):
+                freq_line = 3 * (self.num + 1)
+                if data[freq_line - 1].startswith("BogoMIPS"):
                     return int(data.split(":")[1].strip())
         except (IOError, IndexError, ValueError), (errno, strerror):
             self.logger.error("Failed to read CPU{0} frequency: {1}".format(
@@ -174,8 +174,8 @@ class CPU(DeviceMonitor):
 
         return 0
 
-class CPUUsage(UsageData):
 
+class CPUUsage(UsageData):
     __slots__ = ['_freq']
 
     def __init__(self, sys_perc, usr_perc, freq):
@@ -189,10 +189,10 @@ class CPUUsage(UsageData):
         """ Raises IOError error if output stream can't be written
         """
         out.write("CPU-sys {0}\n CPU-usr {1}\n CPU-freq {2}\n".format(
-                self._sys_perc, self._usr_perc, self._freq))
+            self._sys_perc, self._usr_perc, self._freq))
+
 
 class CPUState(object):
-
     __slots__ = ['_iteration', '_inactive_iters']
 
     def __init__(self, uid):
@@ -248,16 +248,16 @@ class CPUState(object):
     def get_usr_perc(self):
         """ Get user time percentage for last iteration """
         return (100.0 * self._delta_usr / max(self._delta_usr + self._delta_sys,
-            self._delta_total))
+                                              self._delta_total))
 
     def get_sys_perc(self):
         """ Get system time percentage for last iteration """
         return (100.0 * self._delta_sys / max(self._delta_usr + self._delta_sys,
-            self._delta_total))
+                                              self._delta_total))
 
     def is_alive(self, iteration):
         return self._iteration == iteration
 
     def is_stale(self, iteration):
         return ((iteration - self._last_update) > (self._inactive_iters *
-            self._inactive_iters))
+                                                   self._inactive_iters))

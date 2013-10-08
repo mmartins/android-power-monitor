@@ -6,6 +6,7 @@ PythonActivity = autoclass('org.renpy.android.PythonActivity')
 SystemProperties = autoclass('android.os.SystemProperties')
 Context = autoclass('android.content.Context')
 
+
 class WifiAccess(object):
     __slots__ = ['wifi_manager']
 

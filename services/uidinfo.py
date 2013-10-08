@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 class UidInfo(object):
     def __init__(self, uid, power, energy, runtime):
         self.uid = uid

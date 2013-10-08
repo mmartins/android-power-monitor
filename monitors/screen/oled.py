@@ -12,6 +12,7 @@ import os
 import random
 import struct
 
+
 class OLED(Screen):
 
     NSAMPLES = 500
@@ -24,12 +25,11 @@ class OLED(Screen):
         self._setup_fb_buffer()
 
         # 65025 = 255^2
-        self.RED_PWR   = devconstants.OLED_CHANNEL_PWRS[0] / 65025
+        self.RED_PWR = devconstants.OLED_CHANNEL_PWRS[0] / 65025
         self.GREEN_PWR = devconstants.OLED_CHANNEL_PWRS[1] / 65025
-        self.BLUE_PWR  = devconstants.OLED_CHANNEL_PWRS[2] / 65025
+        self.BLUE_PWR = devconstants.OLED_CHANNEL_PWRS[2] / 65025
         # 585225 = 65025 * 3^2 (three colors)
         self.MODULATION_PWR = devconstants.OLED_MODULATION_PWR / 585225
-
 
     def _setup_fb_samples(self):
         """ Collect samples from framebuffer for averaging pixel color impact
@@ -106,6 +106,7 @@ class OLED(Screen):
         result.set_sys_usage(usage)
 
         return result
+
 
 class OLEDUsage(UsageData):
 

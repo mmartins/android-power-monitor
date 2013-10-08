@@ -5,8 +5,6 @@ try:
 except ImportError:
     from utils.androidhelpers.sensors import SensorsAccess
 
-from utils.hardware import Hardware
-
 from monitors.audio import Audio
 from monitors.cpu import CPU
 from monitors.gps import GPS
@@ -15,11 +13,10 @@ from monitors.screen.lcd import LCD
 from monitors.threeg import ThreeG
 from monitors.wifi import Wifi
 from phones.device import Device
-
 from utils.hardware import Hardware
 
-class Constants(object):
 
+class Constants(object):
     PROVIDER_ATT = "AT&T"
     PROVIDER_TMOBILE = "T - Mobile"
 
@@ -60,11 +57,13 @@ class Constants(object):
 
     @classmethod
     def get_3g_idle_power(cls, provider):
-        raise NotImplementedError("Constants shouldn't be instantiated directly")
+        raise NotImplementedError(
+            "Constants shouldn't be instantiated directly")
 
     @classmethod
     def get_3g_fach_power(cls, provider):
-        raise NotImplementedError("Constants shouldn't be instantiated directly")
+        raise NotImplementedError(
+            "Constants shouldn't be instantiated directly")
 
     @classmethod
     def get_3g_dch_power(cls, provider):
@@ -72,48 +71,53 @@ class Constants(object):
 
     @classmethod
     def get_3g_dchfach_time(cls, provider):
-        raise NotImplementedError("Constants shouldn't be instantiated directly")
+        raise NotImplementedError(
+            "Constants shouldn't be instantiated directly")
 
     @classmethod
     def get_3g_fachidle_time(cls, provider):
-        raise NotImplementedError("Constants shouldn't be instantiated directly")
+        raise NotImplementedError(
+            "Constants shouldn't be instantiated directly")
 
     @classmethod
     def get_3g_tx_queue(cls, provider):
-        raise NotImplementedError("Constants shouldn't be instantiated directly")
+        raise NotImplementedError(
+            "Constants shouldn't be instantiated directly")
 
     @classmethod
     def get_3g_rx_queue(cls, provider):
-        raise NotImplementedError("Constants shouldn't be instantiated directly")
+        raise NotImplementedError(
+            "Constants shouldn't be instantiated directly")
 
     @classmethod
     def get_max_power(cls, monitor_name):
-        raise NotImplementedError("Constants shouldn't be instantiated directly")
+        raise NotImplementedError(
+            "Constants shouldn't be instantiated directly")
 
 
 class BaseDevice(Device):
     hardware = {
-            Hardware.CPU: CPU(Constants),
-            Hardware.LCD: LCD(Constants),
-            Hardware.WIFI: Wifi(Constants),
-            Hardware.THREEG: ThreeG(Constants),
-            Hardware.GPS: GPS(Constants),
-            Hardware.AUDIO: Audio(Constants),
-            Hardware.SENSORS: Sensors(Constants),
+        Hardware.CPU: CPU(Constants),
+        Hardware.LCD: LCD(Constants),
+        Hardware.WIFI: Wifi(Constants),
+        Hardware.THREEG: ThreeG(Constants),
+        Hardware.GPS: GPS(Constants),
+        Hardware.AUDIO: Audio(Constants),
+        Hardware.SENSORS: Sensors(Constants),
     }
 
     power_function = {
-            Hardware.CPU: BasePowerCalculator.get_cpu_power,
-            Hardware.LCD: BasePowerCalculator.get_lcd_power,
-            Hardware.WIFI: BasePowerCalculator.get_wifi_power,
-            Hardware.THREEG: BasePowerCalculator.get_3g_power,
-            Hardware.GPS: BasePowerCalculator.get_gps_power,
-            Hardware.AUDIO: BasePowerCalculator.get_audio_power,
-            Hardware.SENSORS: BasePowerCalculator.get_sensor_power,
+        Hardware.CPU: BasePowerCalculator.get_cpu_power,
+        Hardware.LCD: BasePowerCalculator.get_lcd_power,
+        Hardware.WIFI: BasePowerCalculator.get_wifi_power,
+        Hardware.THREEG: BasePowerCalculator.get_3g_power,
+        Hardware.GPS: BasePowerCalculator.get_gps_power,
+        Hardware.AUDIO: BasePowerCalculator.get_audio_power,
+        Hardware.SENSORS: BasePowerCalculator.get_sensor_power,
     }
 
-class BasePowerCalculator(object):
 
+class BasePowerCalculator(object):
     @classmethod
     def get_lcd_power(cls, lcd_data):
         raise NotImplementedError
@@ -140,21 +144,22 @@ class BasePowerCalculator(object):
 
             i = cls._upper_bound(freq, Constants.CPU_FREQS)
 
-            ratio = (Constants.CPU_PWR_RATIOS[i-1] +
-                (Constants.CPU_PWR_RATIOS[i] - Constants.CPU_PWR_RATIOS[i-1]) /
-                (Constants.CPU_FREQS[i] - Constants.CPU_FREQS[i-1]) *
-                (freq - Constants.CPU_FREQS[i-1]))
+            ratio = (Constants.CPU_PWR_RATIOS[i - 1] +
+                     (Constants.CPU_PWR_RATIOS[i] - Constants.CPU_PWR_RATIOS[
+                         i - 1]) /
+                     (Constants.CPU_FREQS[i] - Constants.CPU_FREQS[i - 1]) *
+                     (freq - Constants.CPU_FREQS[i - 1]))
 
         return max(0, ratio * (cpu_data.usr_perc + cpu_data.sys_perc))
 
     @classmethod
     def get_audio_power(cls, audio_data):
-        return (Constants.AUDIO_PWR if audio_data.music else 0)
+        return Constants.AUDIO_PWR if audio_data.music else 0
 
     @classmethod
     def get_gps_power(cls, gps_data):
         res = sum(time * power for time, power in zip(gps_data.state_times,
-                Constants.GPS_STATE_PWRS))
+                                                      Constants.GPS_STATE_PWRS))
         return res
 
     @classmethod
@@ -181,10 +186,10 @@ class BasePowerCalculator(object):
                 elif i == len(Constants.WIFI_LINK_SPEEDS):
                     i -= 1
 
-                ratio = (Constants.WIFI_LINK_SPEEDS[i-1] +
-                        (Constants.WIFI_LINK_SPEEDS[i] -
-                         Constants.WIFI_LINK_SPEEDS[i-1]) *
-                        (wifi_data.speed - Constants.WIFI_LINK_SPEEDS[i-1]))
+                ratio = (Constants.WIFI_LINK_SPEEDS[i - 1] +
+                         (Constants.WIFI_LINK_SPEEDS[i] -
+                          Constants.WIFI_LINK_SPEEDS[i - 1]) *
+                         (wifi_data.speed - Constants.WIFI_LINK_SPEEDS[i - 1]))
 
         return max(0, Constants.WIFI_HIGH_PWR + ratio * wifi_data.tx_rate)
 
@@ -207,15 +212,15 @@ class BasePowerCalculator(object):
             return 0
 
         res = sum(time * power for time, power in
-                zip(sensor_data.on_times.values,
-                Constants.SENSOR_PWR_RATIOS.values))
+                  zip(sensor_data.on_times.values,
+                      Constants.SENSOR_PWR_RATIOS.values))
 
     @classmethod
     def _upper_bound(cls, value, list_):
         lo = 0
         hi = len(list_)
 
-        while (lo < hi):
+        while lo < hi:
             mid = lo + (hi - lo) // 2
             if list_[mid] <= value:
                 lo = mid + 1

@@ -25,8 +25,8 @@ import logging
 import threading
 import time
 
-class GPS(DeviceMonitor):
 
+class GPS(DeviceMonitor):
     # Constants from android.location.GpsStatus
     GPS_EVENT_STARTED = 1
     GPS_EVENT_STOPPED = 2
@@ -74,10 +74,10 @@ class GPS(DeviceMonitor):
         # Use notification service to gather UID information if it's available
 
         callbacks = {
-                NotificationProxy.ON_START_WAKELOCK : self.__on_start_wakelock,
-                NotificationProxy.ON_STOP_WAKELOCK : self.__on_stop_wakelock,
-                NotificationProxy.ON_START_GPS : self.__on_start_gps,
-                NotificationProxy.ON_STOP_GPS : self.__on_start_gps,
+            NotificationProxy.ON_START_WAKELOCK: self.__on_start_wakelock,
+            NotificationProxy.ON_STOP_WAKELOCK: self.__on_stop_wakelock,
+            NotificationProxy.ON_START_GPS: self.__on_start_gps,
+            NotificationProxy.ON_STOP_GPS: self.__on_start_gps,
         }
 
         if NotificationProxy.is_available():
@@ -108,7 +108,7 @@ class GPS(DeviceMonitor):
         try:
             # >= 5: eclair or higher
             if ((NotificationProxy.is_available() and
-                Build.VERSION.SDK_INT >= 5)):
+                         Build.VERSION.SDK_INT >= 5)):
                 self._hook_method |= self.HOOK_NOTIFICATIONS
         except ValueError:
             pass
@@ -124,32 +124,32 @@ class GPS(DeviceMonitor):
         """ Callback method for GPS status monitor. """
         if (uid == SystemInfo.AID_SYSTEM) and (name == "GpsLocationProvider"):
             self._statekeeper.update_event(self.GPS_STATUS_ENGINE_ON,
-                self.HOOK_NOTIFICATIONS)
+                                           self.HOOK_NOTIFICATIONS)
 
     def __on_stop_wakelock(self, uid, name, lock_type):
         """ Callback method for GPS status monitor. """
         if (uid == SystemInfo.AID_SYSTEM) and (name == "GpsLocationProvider"):
             self._statekeeper.update_event(self.GPS_STATUS_ENGINE_OFF,
-                self.HOOK_NOTIFICATIONS)
+                                           self.HOOK_NOTIFICATIONS)
 
     def __on_start_gps(self, uid):
         """ Callback method for GPS status monitor. """
         self.update_uid_event(uid, self.GPS_STATUS_SESSION_BEGIN,
-                self.HOOK_NOTIFICATIONS)
+                              self.HOOK_NOTIFICATIONS)
 
     def __on_stop_gps(self, uid):
         """ Callback method for GPS status monitor. """
         self.update_uid_event(uid, self.GPS_STATUS_SESSION_END,
-                self.HOOK_NOTIFICATIONS)
+                              self.HOOK_NOTIFICATIONS)
 
     def __on_gps_status_changed(self, event):
         """ Callback method for GPS status monitor. """
         if event == self.GPS_EVENT_STARTED:
             self._statekeeper.update_event(self.GPS_STATUS_SESSION_BEGIN,
-                    self.HOOK_GPS_STATUS_LISTENER)
+                                           self.HOOK_GPS_STATUS_LISTENER)
         elif event == self.GPS_EVENT_STOPPED:
             self._statekeeper.update_event(self.GPS_STATUS_SESSION_END,
-                    self.HOOK_GPS_STATUS_LISTENER)
+                                           self.HOOK_GPS_STATUS_LISTENER)
         with self._gpsstatus_lock:
             self._status = self._listener.gps_status
 
@@ -161,7 +161,7 @@ class GPS(DeviceMonitor):
 
             if state is None:
                 state = GPSState(self.HOOK_NOTIFICATIONS | self.HOOK_TIMER,
-                        self._sleep_time, self._update_time)
+                                 self._sleep_time, self._update_time)
                 state.update_event(event, hook_source)
                 self._uid_states[uid] = state
             else:
@@ -179,7 +179,7 @@ class GPS(DeviceMonitor):
             pwr_state = self._statekeeper.pwr_state
             self._statekeeper.reset_times()
 
-        # Get the number of satellitle that were available in the last update
+        # Get the number of satellite that were available in the last update
 
         num_satellites = 0
         with self._gpsstatus_lock:
@@ -192,7 +192,7 @@ class GPS(DeviceMonitor):
         if self.has_uid_information:
             with self._uidstates_lock:
                 self._update_time = (self._start_time + self._iter_interval *
-                        iter_num)
+                                     iter_num)
                 for uid, state in self._uid_states.iteritems():
                     state_times = state.get_state_times()
                     pwr_state = state.get_power_state()
@@ -206,12 +206,12 @@ class GPS(DeviceMonitor):
 
                     # Remove state information for UIDs no longer using the GPS
                     if pwr_state == self.POWER_STATE_OFF:
-                        del(self._uid_states[uid])
+                        del (self._uid_states[uid])
 
         return result
 
-class GPSUsage(UsageData):
 
+class GPSUsage(UsageData):
     __slots__ = ['num_satellites']
 
     def __init__(self, state_times, num_satellites):
@@ -224,8 +224,9 @@ class GPSUsage(UsageData):
 
     def log(self, out):
         res = "GPS-state-times {0}\nGPS-num_satellites {1}\n".format(
-                self.state_times, self.num_satellites)
+            self.state_times, self.num_satellites)
         out.write(res)
+
 
 class GPSState(object):
     """ Container for storing actual GPS state in addition to simulating
@@ -260,7 +261,7 @@ class GPSState(object):
         if norm == 0.0:
             norm = 1.0
 
-        self._state_times[:] = [e/norm for e in self._state_times]
+        self._state_times[:] = [e / norm for e in self._state_times]
 
         return self._state_times
 
@@ -294,8 +295,8 @@ class GPSState(object):
             self.logger.warn("Unknown GPS event capture: {0}".format(event))
 
         if self.pwr_state != prev_state:
-            if (prev_state == GPS.POWER_STATE_ON) and (self.pwr_state ==
-                    GPS.POWER_STATE_SLEEP):
+            if ((prev_state == GPS.POWER_STATE_ON) and
+                    (self.pwr_state == GPS.POWER_STATE_SLEEP)):
                 self._off_time = time.time() + self._sleep_time
             else:
                 # Any other state transition should reset the off timer
@@ -306,14 +307,14 @@ class GPSState(object):
 
         # Check if GPS has gone to sleep state due to timer
         if ((self._hook_mask & GPS.HOOK_TIMER != 0) and (self._off_time != 0)
-                and (self._off_time < now)):
+            and (self._off_time < now)):
             self._state_times[self.pwr_state] += (self._off_time -
-                    self._update_time) / 1000
+                                                  self._update_time) / 1000
             self.pwr_state = GPS.POWER_STATE_OFF
             self._off_time = 0
 
         # Update the amount of time that we've been in the current state
         self._state_times[self.pwr_state] += ((now - self._update_time) /
-                1000)
+                                              1000)
 
         self._update_time = now

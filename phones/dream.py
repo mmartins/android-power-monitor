@@ -13,7 +13,6 @@ from utils.hardware import Hardware
 
 
 class Constants(BaseConstants):
-
     BATTERY_VOLTAGE = 3.7
     MODEL_NAME = "dream"
 
@@ -33,10 +32,10 @@ class Constants(BaseConstants):
     WIFI_LOWHIGH_PKTBOUND = 15
     WIFI_HIGHLOW_PKTBOUND = 8
     WIFI_LINK_RATIOS = [47.122645, 46.354821, 43.667437,
-            43.283525, 40.980053, 39.44422, 38.676581, 34.069637,
-            29.462693, 20.248805, 11.034917, 6.427122]
+                        43.283525, 40.980053, 39.44422, 38.676581, 34.069637,
+                        29.462693, 20.248805, 11.034917, 6.427122]
     WIFI_LINK_SPEEDS = [1, 2, 5.5, 6, 9, 11, 12, 18, 24, 36, 48,
-            54]
+                        54]
     THREEG_IFACE = "rmnet0"
 
     @classmethod
@@ -57,7 +56,7 @@ class Constants(BaseConstants):
     def get_3g_dch_power(cls, provider):
         if provider == cls.PROVIDER_TMOBILE:
             return 570
-        # Return the worst case for unknown operators
+            # Return the worst case for unknown operators
         return 570
 
     @classmethod
@@ -111,30 +110,28 @@ class Constants(BaseConstants):
 
 
 class DreamPhone(BaseDevice):
-
     hardware = {
-            Hardware.CPU: CPU(Constants),
-            Hardware.LCD: LCD(Constants),
-            Hardware.WIFI: Wifi(Constants),
-            Hardware.THREEG: ThreeG(Constants),
-            Hardware.GPS: GPS(Constants),
-            Hardware.AUDIO: Audio(Constants),
-            Hardware.SENSORS: Sensors(Constants),
+        Hardware.CPU: CPU(Constants),
+        Hardware.LCD: LCD(Constants),
+        Hardware.WIFI: Wifi(Constants),
+        Hardware.THREEG: ThreeG(Constants),
+        Hardware.GPS: GPS(Constants),
+        Hardware.AUDIO: Audio(Constants),
+        Hardware.SENSORS: Sensors(Constants),
     }
 
     power_function = {
-            Hardware.CPU: PowerCalculator.get_cpu_power,
-            Hardware.LCD: PowerCalculator.get_lcd_power,
-            Hardware.WIFI: PowerCalculator.get_wifi_power,
-            Hardware.THREEG: PowerCalculator.get_3g_power,
-            Hardware.GPS: PowerCalculator.get_gps_power,
-            Hardware.AUDIO: PowerCalculator.get_audio_power,
-            Hardware.SENSORS: PowerCalculator.get_sensor_power,
+        Hardware.CPU: PowerCalculator.get_cpu_power,
+        Hardware.LCD: PowerCalculator.get_lcd_power,
+        Hardware.WIFI: PowerCalculator.get_wifi_power,
+        Hardware.THREEG: PowerCalculator.get_3g_power,
+        Hardware.GPS: PowerCalculator.get_gps_power,
+        Hardware.AUDIO: PowerCalculator.get_audio_power,
+        Hardware.SENSORS: PowerCalculator.get_sensor_power,
     }
 
 
 class PowerCalculator(BasePowerCalculator):
-
     @classmethod
     def get_lcd_power(cls, lcd_data):
         if lcd_data.screen_on:
