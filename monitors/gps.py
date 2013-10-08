@@ -50,8 +50,9 @@ class GPS(DeviceMonitor):
 
     def __init__(self, devconstants):
         super(GPS, self).__init__(Hardware.GPS, devconstants)
-        self.uid_states = {}
+        self._uid_states = {}
         self._sleep_time = round(1000.0 * devconstants.GPS_SLEEP_TIME)
+        self._update_time = 0
         self._hook_method = 0
         self._statekeeper = None
 
@@ -170,8 +171,8 @@ class GPS(DeviceMonitor):
         # Get the power data for the physical GPS device
 
         with self._statekeeper_lock:
-            state_times = self._statekeeper.get_start_times()
-            pwr_state = self._statekeeper.get_power_state()
+            state_times = self._statekeeper.state_times
+            pwr_state = self._statekeeper.pwr_state
             self._statekeeper.reset_times()
 
         # Get the number of satellitle that were available in the last update
@@ -242,7 +243,7 @@ class GPSState(object):
             self._update_time = update_time
 
         self._state_times = []
-        self.pwr_state = self.POWER_STATE_OFF
+        self.pwr_state = GPS.POWER_STATE_OFF
 
     @property
     def state_times(self):
@@ -258,7 +259,7 @@ class GPSState(object):
         return self._state_times
 
     def reset_times(self):
-        self._state_times = [0 for i in xrange(self.NPOWER_STATES)]
+        self._state_times = [0 for i in xrange(GPS.NPOWER_STATES)]
 
     def update_event(self, event, hook_source):
         """ When a hook source gets an event, it should report it to this
@@ -273,23 +274,23 @@ class GPSState(object):
         self._update_times()
         prev_state = self.pwr_state
 
-        if event == self.GPS_STATUS_SESSION_BEGIN:
-            self.pwr_state = self.POWER_STATE_ON
-        elif event == self.GPS_STATUS_SESSION_END:
-            if self.pwr_state == self.POWER_STATE_ON:
-                self.pwr_state = self.POWER_STATE_SLEEP
-        elif event == self.GPS_STATUS_ENGINE_ON:
-            if self.pwr_state == self.POWER_STATE_OFF:
-                self.pwr_state = self.POWER_STATE_SLEEP
-        elif event == self.GPS_STATUS_ENGINE_OFF:
-            self.pwr_state = self.POWER_STATE_OFF
+        if event == GPS.GPS_STATUS_SESSION_BEGIN:
+            self.pwr_state = GPS.POWER_STATE_ON
+        elif event == GPS.GPS_STATUS_SESSION_END:
+            if self.pwr_state == GPS.POWER_STATE_ON:
+                self.pwr_state = GPS.POWER_STATE_SLEEP
+        elif event == GPS.GPS_STATUS_ENGINE_ON:
+            if self.pwr_state == GPS.POWER_STATE_OFF:
+                self.pwr_state = GPS.POWER_STATE_SLEEP
+        elif event == GPS.GPS_STATUS_ENGINE_OFF:
+            self.pwr_state = GPS.POWER_STATE_OFF
         else:
             self.logger.warn("Unknown GPS event capture: {0}".format(event))
 
         if self.pwr_state != prev_state:
-            if (prev_state == self.POWER_STATE_ON) and (self.pwr_state ==
-                    self.POWER_STATE_SLEEP):
-                self.off_time = time.time() + self._sleep_time
+            if (prev_state == GPS.POWER_STATE_ON) and (self.pwr_state ==
+                    GPS.POWER_STATE_SLEEP):
+                self._off_time = time.time() + self._sleep_time
             else:
                 # Any other state transition should reset the off timer
                 self._off_time = 0
@@ -298,11 +299,11 @@ class GPSState(object):
         now = round(time.time())
 
         # Check if GPS has gone to sleep state due to timer
-        if ((self.hook_mask & self.HOOK_TIMER != 0) and (self._off_time != 0)
+        if ((self._hook_mask & GPS.HOOK_TIMER != 0) and (self._off_time != 0)
                 and (self._off_time < now)):
             self._state_times[self.pwr_state] += (self._off_time -
                     self._update_time) / 1000
-            self.pwr_state = self.POWER_STATE_OFF
+            self.pwr_state = GPS.POWER_STATE_OFF
             self._off_time = 0
 
         # Update the amount of time that we've been in the current state
