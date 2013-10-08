@@ -197,7 +197,7 @@ class PowerEstimator(threading.Thread):
                 powers[k] = pwrbuf.get_powers_up_to_timestamp(uid,
                     iter_num, number)
 
-                for i, value in powers.enumerate():
+                for i, value in enumerate(powers):
                     result[k] += value
 
             return result
@@ -244,7 +244,7 @@ class PowerEstimator(threading.Thread):
         self._appslock.acquire()
 
         for uid in self._running_apps.keys():
-            for i, pwrbuf in self._pwr_history.values().enumerate():
+            for i, pwrbuf in enumerate(self._pwr_history.values()):
                 pwr = 0.0
 
                 with self._iterlock:
