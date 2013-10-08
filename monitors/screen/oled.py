@@ -22,7 +22,7 @@ class OLED(Screen):
 
         self._fb_samples = []
         self._fb_file = None
-        self._setup_fb_buffer()
+        self._setup_fb_samples()
 
         # 65025 = 255^2
         self.RED_PWR = devconstants.OLED_CHANNEL_PWRS[0] / 65025
@@ -55,7 +55,7 @@ class OLED(Screen):
         iteration. """
         result = IterationData()
 
-        brightness = Screen.get_screen_brightness()
+        brightness = Screen.get_display_brightness()
 
         if 0 <= brightness <= 255:
             self.logger.warn("Could not retrieve brightness information")
@@ -73,7 +73,7 @@ class OLED(Screen):
                     for x in self._fb_samples:
                         fp.seek(x * 4)
                         # Read 32-bit integer from file
-                        px = struct.unpack('i', self.fin.read(4))[0]
+                        px = struct.unpack('i', fp.read(4))[0]
                         blue = px >> 8 & 0xFF
                         green = px >> 16 & 0xFF
                         red = px >> 24 & 0xFF
@@ -94,7 +94,7 @@ class OLED(Screen):
                 px_pwr = -1
 
             if px_pwr >= 0.0:
-                px_pwr *= self.screen_width * self.screen_height / self.NSAMPLES
+                px_pwr *= self.width * self.height / self.NSAMPLES
 
         if screen:
             usage = OLEDUsage(brightness, px_pwr)
