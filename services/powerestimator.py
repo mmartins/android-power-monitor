@@ -46,7 +46,7 @@ class PowerEstimator(threading.Thread):
         self._log.close()
 
     def _run(self):
-        '''Loop that keeps updating the power profile'''
+        """Loop that keeps updating the power profile"""
 
         start_time = round(time.time())
 
@@ -177,8 +177,8 @@ class PowerEstimator(threading.Thread):
         return max_powers
 
     def get_hw_uid_mask(self):
-        '''Return a mask indicating which hardware components do not provide
-        UID information'''
+        """Return a mask indicating which hardware components do not provide
+        UID information"""
         mask = 0
         for i, hw in self._phone.hardware.values().enumerate():
             if not hw.has_uid_information:
@@ -270,8 +270,8 @@ class PowerEstimator(threading.Thread):
         return powers
 
     def _filter_sum(self, hw_powers, ignore_mask):
-        '''Return a sum of list containing elements that are now inside
-        ignore_mask'''
+        """Return a sum of list containing elements that are now inside
+        ignore_mask"""
         return sum(x for i, x in hw_powers.values().enumerate() if (ignore_mask
             & 1 << i) == 0)
 
