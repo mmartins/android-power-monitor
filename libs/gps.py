@@ -3,6 +3,7 @@ from jnius import PythonJavaClass, java_method, autoclass
 Looper = autoclass('android.os.Looper')
 LocationManager = autoclass('android.location.LocationManager')
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
+GpsStatus = autoclass('android.location.GpsStatus')
 Context = autoclass('android.content.Context')
 
 class GPSListener(PythonJavaClass):
@@ -46,6 +47,7 @@ class GPSStatusListener(PythonJavaClass):
     def __init__(self, callback):
         super(GPSStatusListener, self).__init__()
         self.callback = callback
+        self.gps_status = GpsStatus()
         self.location_manager = PythonActivity.mActivity.getSystemService(
                 Context.LOCATION_SERVICE)
 
@@ -61,6 +63,7 @@ class GPSStatusListener(PythonJavaClass):
 
     @java_method('(I)V')
     def onGpsStatusChanged(self, event):
+        self.gps_status = self.location_manager.getGpsStatus(self.gps_status)
         self.callback(self, 'gps-status-changed', event)
 
     @java_method('(Ljava/lang/Object;)Z')
