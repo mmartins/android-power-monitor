@@ -31,7 +31,7 @@ class PowerEstimator(threading.Thread):
 
         self._phone = phone
 
-        self._history = dict(self._phone.hardware.keys(), None)
+        self._pwr_history = dict(self._phone.hardware.keys(), None)
         self._oled_pwr_history = {}
 
         self._log = open("powerlog.log", "w")
@@ -43,7 +43,6 @@ class PowerEstimator(threading.Thread):
         # self.start()
 
     def __del__(self):
-        super(PowerEstimator, self).__del__()
         self._log.close()
 
     def _run(self):
@@ -88,7 +87,7 @@ class PowerEstimator(threading.Thread):
 
                     power = self._phone.power_function[name](usage)
                     usage = power
-                    self._history[name].add(uid, iter_num, power)
+                    self._pwr_history[name].add(uid, iter_num, power)
                     if uid == SystemInfo.AID_ALL:
                         total_power += power
 
@@ -98,7 +97,8 @@ class PowerEstimator(threading.Thread):
                                 SystemInfo.get_app_name(uid))
 
                     if name == "OLED" and data.pix_pwr >= 0:
-                        self._oled_history.add(uid, iter_num, int(1000 *
+                        self._oled_pwr_history.add(uid, iter_num,
+                                                       int(1000 *
                             data.pix_pwr))
 
                 self._update_avg_power()
@@ -128,7 +128,7 @@ class PowerEstimator(threading.Thread):
             self._log.write(out)
             self._log.write("== BATTERY INFO END ==\n")
 
-    def _log_sys_setting(self):
+    def _log_sys_settings(self):
         out = ""
 
         with self._loglock:
@@ -144,7 +144,7 @@ class PowerEstimator(threading.Thread):
             self._log.write("== POWER END ==\n")
 
     def _update_avg_power(self):
-        hw_history = self._get_hw_history(5 * 60, -1, SystemInfo.AID_ALL, -1)
+        hw_history = self.get_hardware_history(5 * 60, -1, SystemInfo.AID_ALL, -1)
 
         avg = 0
         weighted_pwr = 0
@@ -172,7 +172,7 @@ class PowerEstimator(threading.Thread):
 
 
     def get_hardware_max_powers(self):
-        max_powers = {k: constants.get_max_power(k) for k in
+        max_powers = {k: self._phone.constants.get_max_power(k) for k in
             self._pwr_history.keys()}
         return max_powers
 
@@ -186,12 +186,13 @@ class PowerEstimator(threading.Thread):
 
         return mask
 
-    def get_hardware_history(self, number, uid, iter_num):
+    def get_hardware_history(self, name, uid, iter_num):
         #if iter_num == -1:
             #TODO: Finish this
 
         if name == "ALL":
             result = dict(self._pwr_history.keys(), 0)
+            powers = dict(self._pwr_history.keys(), 0)
             for k, pwrbuf in self._pwr_history.iteritems():
                 powers[k] = pwrbuf.get_powers_up_to_timestamp(uid,
                     iter_num, number)
@@ -219,10 +220,10 @@ class PowerEstimator(threading.Thread):
     def get_uid_runtime(self, uid, countertype):
         runtime = 0
 
-        for name, pwrbuf in self._pwr_history,iteritems():
-            bcount = pwrbuf.get_uid_buffer_count(uid, window_type)
+        for name, pwrbuf in self._pwr_history.iteritems():
+            bcount = pwrbuf.get_uid_buffer_count(uid, countertype)
             if bcount > runtime:
-                runtime = entries
+                runtime = bcount
 
         return runtime * self.ITERATION_INTERVAL // 1000
 
@@ -243,18 +244,24 @@ class PowerEstimator(threading.Thread):
         self._appslock.acquire()
 
         for uid in self._running_apps.keys():
-            for i, pwrbuf in self._history.values().enumerate():
+            for i, pwrbuf in self._pwr_history.values().enumerate():
                 pwr = 0.0
 
+                with self._iterlock:
+                    # TODO: Fix invalid reference to _iter
+                    iter_num = self._iter
+
                 if (ignore_mask & 1 << i) == 0:
-                    pwr += pwrbuf.get(uid, iter_num, 1)[Counter.COUNTER_MINUTE]
+                    pwr += pwrbuf.get(uid, iter_num, 1)[Counter
+                    .COUNTER_MINUTE]
 
                 scale = self.ITERATION_INTERVAL / 1000
 
-                uid_info = UidInfo(uid, power,
-                        _filter_sum(self.get_uid_hw_powers(uid, countertype),
+                uid_info = UidInfo(uid, pwr,
+                        self._filter_sum(self.get_uid_hw_powers(uid,
+                                                              countertype),
                             ignore_mask) * self.ITERATION_INTERVAL /
-                        1000, get_runtime(uid, countertype) *
+                        1000, self.get_uid_runtime(uid, countertype) *
                         self.ITERATION_INTERVAL / 1000)
                 powers[uid] = uid_info
 
@@ -270,16 +277,16 @@ class PowerEstimator(threading.Thread):
 
     def get_uid_oled_power(self, uid):
 
-        entries = self._oled_history.get_uid_buffer_count(uid,
+        entries = self._oled_pwr_history[uid].get_uid_buffer_count(uid,
                 Counter.COUNTER_TOTAL)
 
         if entries <= 0:
             return 0
 
-        norm = self._oled_history.get_total(uid, Counter.COUNTER_TOTAL /
-                1000) / entries
+        norm = self._oled_pwr_history[uid].get_total(uid, Counter.COUNTER_TOTAL / 1000) / entries
 
-        result = (norm * 255 / self._constants.get_max_power(Hardware.OLED) -
-                self._constants.OLED_BASE_PWR)
+        result = (norm * 255 / self._phone.constants.get_max_power(Hardware
+        .OLED) -
+                self._phone.constants.OLED_BASE_PWR)
 
         return round(result * 100)
