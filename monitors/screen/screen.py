@@ -5,13 +5,13 @@ try:
 except ImportError:
     from utils.androidhelpers.display import DisplayAccess
 
-from android.broadcast import BroadcastReceiver
-from monitors.powermonitor import PowerMonitor
+from libs.broadcast import BroadcastReceiver
+from monitors.devicemonitor import DeviceMonitor
 
 import threading
 
 
-class Screen(PowerMonitor):
+class Screen(DeviceMonitor):
     Display = DisplayAccess()
 
     BACKLIGHT_BRIGHTNESS_FILES = [
