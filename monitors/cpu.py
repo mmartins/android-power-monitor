@@ -12,7 +12,8 @@ class CPU(DeviceMonitor):
     TAG_MASK = Hardware.CPU + "{0}"
     CPUINFO_FILE = "/proc/cpuinfo"
     STAT_FILE = "/proc/stat"
-    SYSFS_FREQ_FILE_MASK = "/sys/devices/system/cpu/cpu{0}/cpufreq/scaling_cur_freq"
+    SYSFS_FREQ_FILE_MASK =\
+        "/sys/devices/system/cpu/cpu{0}/cpufreq/scaling_cur_freq"
 
     def __init__(self, devconstants, num=0):
         super(CPU, self).__init__(self.TAG_MASK.format(num), devconstants)
@@ -46,10 +47,11 @@ class CPU(DeviceMonitor):
         sys_time = times[SystemInfo.INDEX_SYS_TIME]
         total_time = times[SystemInfo.INDEX_TOTAL_TIME]
 
+        init = self._state.is_initialized()
         self._state.update(usr_time, sys_time, total_time, iter_num)
 
         # Power draw is based on usage time along with CPU frequency
-        if self._state.is_initialized():
+        if init:
             result.set_sys_usage(CPUUsage(self._state.get_usr_perc(),
                                           self._state.get_sys_perc(), freq))
 
@@ -69,7 +71,7 @@ class CPU(DeviceMonitor):
                 pid_state = self._pid_states.get(pid, None)
 
                 # New process that hasn't been registered yet by our monitor
-                if pid_state is None:
+                if not pid_state:
                     uid = SystemInfo.get_uid_for_pid(pid)
 
                     if uid >= 0:
@@ -95,7 +97,7 @@ class CPU(DeviceMonitor):
                         pid_state.update(usr_time, sys_time, total_time,
                                          iter_num)
 
-                        if not pid_state.is_initialized():
+                        if not init:
                             continue
 
                 uid_state = self._uid_states.get(pid_state.uid, None)
@@ -197,18 +199,18 @@ class CPUState(object):
 
     def __init__(self, uid):
         self.uid = uid
-        self._last_usr = 0
-        self._last_sys = 0
-        self._last_total = 0
+        self._last_usr = -1      # user time
+        self._last_sys = 0      # system time
+        self._last_total = 0    # total time
         self._delta_usr = 0
         self._delta_sys = 0
         self._delta_total = 1
-        self._last_update = 0
-        self._iteration = 0
+        self._last_update = 0   # iteration number
+        self._iteration = 0     # current iteration number
         self._inactive_iters = 0
 
     def is_initialized(self):
-        return self._last_usr != 0
+        return self._last_usr != -1
 
     def skip_update(self, iteration, total_time):
         """ Process is still running but we skip reading the CPU utilization
@@ -259,5 +261,5 @@ class CPUState(object):
         return self._iteration == iteration
 
     def is_stale(self, iteration):
-        return ((iteration - self._last_update) > (self._inactive_iters *
-                                                   self._inactive_iters))
+        return (1 << (iteration - self._last_update) > (self._inactive_iters
+                                                        * self._inactive_iters))
