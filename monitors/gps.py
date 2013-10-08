@@ -209,10 +209,11 @@ class GPSUsage(UsageData):
 
     __slots__ = ['num_satellites']
 
-    def __init__(self, state_times=None, num_satellites=None):
+    def __init__(self, state_times, num_satellites):
         """ A usage time is the time in seconds since the last data update.
         Number of satellites is only available whil the GPS is on.
         """
+        super(GPSUsage, self).__init__()
         self.state_times = state_times
         self.num_satellites = num_satellites
 
