@@ -55,11 +55,13 @@ class GPS(DeviceMonitor):
         self._update_time = 0
         self._hook_method = 0
         self._statekeeper = None
+        self._status = None
 
         self._setup_gps_hook()
 
         self._uidstates_lock = threading.Lock()
         self._statekeeper_lock = threading.Lock()
+        self._gpsstatus_lock = threading.Lock()
 
         # Track physical state
         self._statekeeper = GPSState(self._hook_method, self._sleep_time)
@@ -148,6 +150,8 @@ class GPS(DeviceMonitor):
         elif event == self.GPS_EVENT_STOPPED:
             self._statekeeper.update_event(self.GPS_STATUS_SESSION_END,
                     self.HOOK_GPS_STATUS_LISTENER)
+        with self._gpsstatus_lock:
+            self._status = self._listener.gps_status
 
     def update_uid_event(self, uid, event, hook_source):
         """ Update GPS state machine for given UID """
@@ -178,15 +182,16 @@ class GPS(DeviceMonitor):
         # Get the number of satellitle that were available in the last update
 
         num_satellites = 0
-        if pwr_state == self.POWER_STATE_ON and self.status is not None:
-            num_satellites = len(self.status.getSatellites())
+        with self._gpsstatus_lock:
+            if pwr_state == self.POWER_STATE_ON and self._status is not None:
+                num_satellites = len(self._status.getSatellites())
 
         result.set_sys_usage(GPSUsage(state_times, num_satellites))
 
         # Get usage data for each UID we have information on
         if self.has_uid_information:
             with self._uidstates_lock:
-                self.update_time = (self._start_time + self._iter_interval *
+                self._update_time = (self._start_time + self._iter_interval *
                         iter_num)
                 for uid, state in self._uid_states.iteritems():
                     state_times = state.get_state_times()
