@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import division
 import time
 
 
@@ -42,9 +43,9 @@ class Counter(object):
             return self._total
 
         now = round(time.time()) - self._start_time
-        timestamp = (now * _BucketCounter.BUCKET_NUM /
+        timestamp = (now * _BucketCounter.BUCKET_NUM //
                      Counter.COUNTER_DURATIONS[type_])
-        progress = ((1.0 * now * _BucketCounter.BUCKET_NUM %
+        progress = ((now * _BucketCounter.BUCKET_NUM %
                      Counter.COUNTER_DURATIONS[type_]) /
                     Counter.COUNTER_DURATIONS[type_])
         return self._counters[type_].get(timestamp, progress)
