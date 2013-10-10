@@ -79,7 +79,7 @@ class Wifi(DeviceMonitor):
             self._speed = self._wifi.get_speed()
 
         if self._state.is_initialized():
-            result.set_sys_usage(WifiUsage(self._state.delta_pkts,
+            result.set_sys_usage(WifiUsage(True, self._state.delta_pkts,
                                            self._state.delta_tx_bytes,
                                            self._state.delta_rx_bytes,
                                            self._state.tx_rate, self._speed,
@@ -139,7 +139,7 @@ class Wifi(DeviceMonitor):
                                      rx_bytes)
 
                     if active:
-                        usage = WifiUsage(uid_state.delta_pkts,
+                        usage = WifiUsage(True, uid_state.delta_pkts,
                                           uid_state.delta_tx_bytes,
                                           uid_state.delta_rx_bytes,
                                           uid_state.tx_rate,
@@ -154,7 +154,9 @@ class Wifi(DeviceMonitor):
 class WifiUsage(UsageData):
     __slots__ = ['speed', 'pwr_state']
 
-    def __init__(self, pkts, tx_bytes, rx_bytes, tx_rate, speed, pwr_state):
+    def __init__(self, on=False, pkts=0, tx_bytes=0, rx_bytes=0, tx_rate=0.0,
+                 speed=0, pwr_state=0):
+        self.on = on
         self.delta_pkts = pkts
         self.tx_bytes = tx_bytes
         self.rx_bytes = rx_bytes
@@ -163,11 +165,10 @@ class WifiUsage(UsageData):
         self.pwr_state = pwr_state
 
     def log(self, out):
-        res = "Wifi-pkts {0}\nWifi-tx_bytes {1}\nWifi-rx_bytes {2}\nWifi-tx_" \
-              "rate{3}\nWifi-speed {4}\nWifi-pwr_state " \
-              "{5}\n".format(self.delta_pkts,
-                             self.tx_bytes, self.rx_bytes, self.tx_rate,
-                             self.speed,
+        res = "Wifi-on {0}\nWifi-pkts {1}\nWifi-tx_bytes {2}\nWifi-rx_bytes " \
+              "{3}\nWifi-tx_rate{4}\nWifi-speed {5}\nWifi-pwr_state " \
+              "{5}\n".format(self.on, self.delta_pkts, self.tx_bytes,
+                             self.rx_bytes, self.tx_rate, self.speed,
                              self.pwr_state)
         out.write(res)
 
