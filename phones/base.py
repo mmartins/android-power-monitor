@@ -146,6 +146,11 @@ class BasePowerCalculator(object):
 
             i = cls._upper_bound(freq, Constants.CPU_FREQS)
 
+            if i == 0:
+                i += 1
+            elif i == len(Constants.CPU_FREQS):
+                i -= 1
+
             ratio = (Constants.CPU_PWR_RATIOS[i - 1] +
                      (Constants.CPU_PWR_RATIOS[i] - Constants.CPU_PWR_RATIOS[
                          i - 1]) /
