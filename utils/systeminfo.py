@@ -17,9 +17,9 @@ class SystemInfo(object):
     AID_CAMERA = 1006       # camera
     AID_LOG = 1007          # log devices
     AID_COMPASS = 1008      # compass sensor
-    AID_MOUNT = 1009        # mounted socket
+    AID_MOUNT = 1009        # mountd socket
     AID_WIFI = 1010         # WiFi
-    AID_ADB = 1011          # ADB
+    AID_ADB = 1011          # android debug bridge (adbd)
     AID_INSTALL = 1012      # package installer
     AID_MEDIA = 1013        # media server
     AID_DHCP = 1014         # DHCP client
