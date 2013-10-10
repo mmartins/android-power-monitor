@@ -90,7 +90,7 @@ class ThreeG(DeviceMonitor):
         self._state.update(tx_pkts, rx_pkts, tx_bytes, rx_bytes)
 
         if self._state.is_initialized():
-            result.set_sys_usage(ThreeGUsage(self._state.delta_pkts,
+            result.set_sys_usage(ThreeGUsage(True, self._state.delta_pkts,
                                              self._state.tx_bytes,
                                              self._state.rx_bytes,
                                              self._state.pwr_state,
@@ -121,7 +121,7 @@ class ThreeG(DeviceMonitor):
 
                     if ((uid_state.tx_bytes + uid_state.rx_bytes != 0) or
                             (uid_state.pwr_state != self.POWER_STATE_IDLE)):
-                        usage = ThreeGUsage(uid_state.delta_pkts,
+                        usage = ThreeGUsage(True, uid_state.delta_pkts,
                                             uid_state.tx_bytes,
                                             uid_state.rx_bytes,
                                             uid_state.pwr_state, self._provider)
@@ -135,9 +135,11 @@ class ThreeG(DeviceMonitor):
 class ThreeGUsage(UsageData):
     __slots__ = ['pwr_state', 'provider']
 
-    def __init__(self, pkts, tx_bytes, rx_bytes, pwr_state, provider):
+    def __init__(self, on=False, pkts=0, tx_bytes=0, rx_bytes=0, pwr_state=0,
+                 provider=""):
         super(ThreeGUsage, self).__init__()
 
+        self.on = on
         self.pkts = pkts
         self.tx_bytes = tx_bytes
         self.rx_bytes = rx_bytes
@@ -145,10 +147,10 @@ class ThreeGUsage(UsageData):
         self.provider = provider
 
     def log(self, out):
-        res = "3G-on {0}\n3G-tx_bytes {1}\n3G-rx_bytes {2}\n3G-pwr_state " \
-              "{3}\n3G-providerr {4}\n".format(
-            self.pkts, self.tx_bytes, self.rx_bytes, self.pwr_state,
-            self.provider)
+        res = "3G-on {0}\n3G-pkts {1}\n3G-tx_bytes {2}\n3G-rx_bytes " \
+              "{3}\n3G-pwr_state {4}\n3G-provider " \
+              "{5}\n".format(self.on, self.pkts, self.tx_bytes,
+                             self.rx_bytes, self.pwr_state, self.provider)
         out.write(res)
 
 
