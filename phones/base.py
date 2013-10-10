@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import division
+
 try:
     from libs.sensors import SensorsAccess
 except ImportError:
