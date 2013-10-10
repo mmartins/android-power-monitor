@@ -221,8 +221,8 @@ class BasePowerCalculator(object):
             return 0
 
         res = sum(time * power for time, power in
-                  zip(sensor_data.on_times.values,
-                      Constants.SENSOR_PWR_RATIOS.values))
+                  zip(sensor_data.on_times.values(),
+                      Constants.SENSOR_PWR_RATIOS.values()))
 
     @classmethod
     def _upper_bound(cls, value, list_):
