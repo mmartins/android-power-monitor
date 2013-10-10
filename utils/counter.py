@@ -58,7 +58,7 @@ class _BucketCounter(object):
     BUCKET_NUM = 60         # Hold up to 60 seconds of data
 
     def __init__(self):
-        self._buckets = [0] * _BucketCounter.BUCKET_NUM
+        self._buckets = [0] * self.BUCKET_NUM
         self._total = 0
         self._base = 0
         self._base_idx = 0
@@ -70,20 +70,20 @@ class _BucketCounter(object):
         self._dropped = 0
 
         # It's been a while since we synchronized. Let's start freshly new.
-        if self._base + 2 * _BucketCounter.BUCKET_NUM <= timestamp:
+        if self._base + 2 * self.BUCKET_NUM <= timestamp:
             # Clear the whole data structure
-            self._buckets = [0] * _BucketCounter.BUCKET_NUM
+            self._buckets = [0] * self.BUCKET_NUM
             self._total = 0
             self._base = timestamp
             self._base_idx = 0
         else:
             # Clean the old data buckets holding up to timestamp
-            while self._base + _BucketCounter.BUCKET_NUM <= timestamp:
+            while self._base + self.BUCKET_NUM <= timestamp:
                 self._dropped = self._buckets[self._base_idx]
                 self._total -= self._dropped
                 self._buckets[self._base_idx] = 0
                 self._base += 1
-                if self._base_idx + 1 == _BucketCounter.BUCKET_NUM:
+                if self._base_idx + 1 == self.BUCKET_NUM:
                     self._base_idx = 0
                 else:
                     self._base_idx += 1
