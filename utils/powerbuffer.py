@@ -61,17 +61,17 @@ class PowerBuffer(object):
 
         return powers
 
-    def get_uid_total(self, uid, windowtype):
+    def get_uid_total(self, uid, countertype):
         uid_power = self.uid_powers.get(uid, None)
         if uid_power is not None:
-            return uid_power.total.get(windowtype)
+            return uid_power.total.get(countertype)
 
         return 0
 
-    def get_uid_buffer_count(self, uid, windowtype):
+    def get_uid_buffer_count(self, uid, countertype):
         uid_power = self.uid_powers.get(uid, None)
         if uid_power is not None:
-            return uid_power.count.get(windowtype)
+            return uid_power.count.get(countertype)
 
         return 0
 
