@@ -31,7 +31,7 @@ class Counter(object):
     def add(self, value):
         self._total += value
         now = round(time.time()) - self._start_time
-        for type_, counter in self._counters:
+        for type_, counter in self._counters.iteritems():
             counter.add(value, now * _BucketCounter.BUCKET_NUM /
                                Counter.COUNTER_DURATIONS[type_])
 
