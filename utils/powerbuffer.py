@@ -40,14 +40,14 @@ class PowerBuffer(object):
         powers = [0] * number
         uid_power = self.uid_powers.get(uid, None)
 
-        if uid_power is None or len(uid_power.queue) == 0:
+        if not uid_power or len(uid_power.queue) == 0:
             return powers
 
         if timestamp == -1:
             timestamp = uid_power.queue[0].iter_num
 
         for data in uid_power.queue:
-            while (data.iter_num < timestamp and idx < number):
+            while data.iter_num < timestamp and idx < number:
                 idx += 1
                 timestamp -= 1
 
