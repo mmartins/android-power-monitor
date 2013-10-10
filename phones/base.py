@@ -173,7 +173,7 @@ class BasePowerCalculator(object):
     def get_wifi_power(cls, wifi_data):
         ratio = 0
 
-        if not wifi_data:
+        if not wifi_data or not wifi_data.on:
             return 0
         if wifi_data.pwr_state == Wifi.POWER_STATE_LOW:
             return Constants.WIFI_LOW_PWR
@@ -204,7 +204,7 @@ class BasePowerCalculator(object):
 
     @classmethod
     def get_3g_power(cls, threeg_data):
-        if not threeg_data:
+        if not threeg_data or not threeg_data.on:
             return 0
         if threeg_data.pwr_state == ThreeG.POWER_STATE_IDLE:
             return Constants.get_3g_idle_power(threeg_data.provider)
