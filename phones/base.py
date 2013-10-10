@@ -193,9 +193,11 @@ class BasePowerCalculator(object):
                 elif i == len(Constants.WIFI_LINK_SPEEDS):
                     i -= 1
 
-                ratio = (Constants.WIFI_LINK_SPEEDS[i - 1] +
-                         (Constants.WIFI_LINK_SPEEDS[i] -
-                          Constants.WIFI_LINK_SPEEDS[i - 1]) *
+                ratio = (Constants.WIFI_LINK_RATIOS[i - 1] +
+                         (Constants.WIFI_LINK_RATIOS[i] -
+                          Constants.WIFI_LINK_RATIOS[i - 1]) /
+                         (Constants.WIFI_LINK_SPEEDS[i] - Constants
+                         .WIFI_LINK_SPEEDS[i - 1]) *
                          (wifi_data.speed - Constants.WIFI_LINK_SPEEDS[i - 1]))
 
         return max(0, Constants.WIFI_HIGH_PWR + ratio * wifi_data.tx_rate)
