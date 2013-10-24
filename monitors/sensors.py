@@ -90,9 +90,8 @@ class SensorState(object):
     __slots__ = ['_on', '_on_times', 'started_sensors']
 
     def __init__(self):
-        # TODO: Fix invalid reference to SENSORS
-        self._on = dict.fromkeys(self.SENSORS, 0)
-        self._on_times = dict.fromkeys(self.SENSORS, 0)
+        self._on = dict.fromkeys(Sensors.SENSORS, 0)
+        self._on_times = dict.fromkeys(Sensors.SENSORS, 0)
         self._timestamp = round(time.time())
         self.started_sensors = 0
 
@@ -105,12 +104,13 @@ class SensorState(object):
         self._on[name] += 1
 
     def stop_sensor(self, name):
-        if (name in self._on) and (self._on[name] - 1 == 0):
-            self._on_times[name] += round(time.time()) - self._timestamp
-            self.started_sensors -= 1
-
-        # WARNING: May break when name is invalid
-        self._on[name] -= 1
+        if name in self._on:
+            if self._on[name] == 0:
+                return
+            if self._on[name] - 1 == 0:
+                self._on_times[name] += round(time.time()) - self._timestamp
+                self.started_sensors -= 1
+            self._on[name] -= 1
 
     def get_times(self):
         now = round(time.time())
@@ -122,8 +122,8 @@ class SensorState(object):
         times = {}
 
         for k, v in self._on_times.iteritems():
-            factor = now - self._timestamp if self._on.get(k, 0) else 0
-            times[k] = (v + factor) // div
+            factor = now - self._timestamp if self._on.get(k, 0) > 0 else 0
+            times[k] = (v + factor) / div
             self._on_times[k] = 0
 
         self._timestamp = now
