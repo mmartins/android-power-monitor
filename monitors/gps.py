@@ -51,7 +51,7 @@ class GPS(DeviceMonitor):
     def __init__(self, devconstants):
         super(GPS, self).__init__(Hardware.GPS, devconstants)
         self._uid_states = {}
-        self._sleep_time = round(1000.0 * devconstants.GPS_SLEEP_TIME)
+        self._sleep_time = round(1000 * devconstants.GPS_SLEEP_TIME)
         self._update_time = 0
         self._hook_method = 0
         self._statekeeper = None
@@ -108,7 +108,7 @@ class GPS(DeviceMonitor):
         try:
             # >= 5: eclair or higher
             if ((NotificationProxy.is_available() and
-                         Build.VERSION.SDK_INT >= 5)):
+                    int(Build.VERSION.SDK_INT) >= 5)):
                 self._hook_method |= self.HOOK_NOTIFICATIONS
         except ValueError:
             pass
@@ -162,10 +162,9 @@ class GPS(DeviceMonitor):
             if state is None:
                 state = GPSState(self.HOOK_NOTIFICATIONS | self.HOOK_TIMER,
                                  self._sleep_time, self._update_time)
-                state.update_event(event, hook_source)
                 self._uid_states[uid] = state
-            else:
-                state.update_event(event, hook_source)
+
+            state.update_event(event, hook_source)
 
     def calc_iteration(self, iter_num):
         """ Return power usage of each application using GPS after one
@@ -196,13 +195,12 @@ class GPS(DeviceMonitor):
                 for uid, state in self._uid_states.iteritems():
                     state_times = state.get_state_times()
                     pwr_state = state.get_power_state()
-                    if pwr_state == self.POWER_STATE_ON:
-                        usage = GPSUsage(state_times, num_satellites)
-                    else:
-                        usage = GPSUsage(state_times, 0)
                     state.reset_times()
 
-                    result.set_uid_usage(uid, usage)
+                    # There is a guarantee that num_satellites will be zero
+                    # if GPS is off (see above)
+                    result.set_uid_usage(uid, GPSUsage(state_times,
+                                                       num_satellites))
 
                     # Remove state information for UIDs no longer using the GPS
                     if pwr_state == self.POWER_STATE_OFF:
@@ -219,6 +217,7 @@ class GPSUsage(UsageData):
         Number of satellites is only available whil the GPS is on.
         """
         super(GPSUsage, self).__init__()
+        # TODO: Should be dictionary
         self.state_times = state_times
         self.num_satellites = num_satellites
 
@@ -234,17 +233,17 @@ class GPSState(object):
 
     logger = logging.getLogger("GPSState")
 
-    def __init__(self, hook_mask, sleep_time=0.0, update_time=None):
+    def __init__(self, hook_mask, sleep_time=None, update_time=None):
         # The union of whatever valid hook sources. See HOOK_ constants
         self._hook_mask = hook_mask
         # The time GPS hardware should turn off. Only used if HOOK_TIMER is in
         # hook_mask. Not useful if HOOK_TIMER is not set
-        self._off_time = 0.0
+        self._off_time = None
         # Time GPS remains in sleep state after session has ended
         # (seconds)
         self._sleep_time = sleep_time
 
-        if update_time is None:
+        if not update_time:
             self._update_time = round(time.time())
         else:
             self._update_time = update_time
@@ -292,7 +291,7 @@ class GPSState(object):
         elif event == GPS.GPS_STATUS_ENGINE_OFF:
             self.pwr_state = GPS.POWER_STATE_OFF
         else:
-            self.logger.warn("Unknown GPS event capture: {0}".format(event))
+            self.logger.error("Unknown GPS event capture: {0}".format(event))
 
         if self.pwr_state != prev_state:
             if ((prev_state == GPS.POWER_STATE_ON) and
@@ -300,21 +299,20 @@ class GPSState(object):
                 self._off_time = time.time() + self._sleep_time
             else:
                 # Any other state transition should reset the off timer
-                self._off_time = 0
+                self._off_time = None
 
     def _update_times(self):
         now = round(time.time())
 
         # Check if GPS has gone to sleep state due to timer
-        if ((self._hook_mask & GPS.HOOK_TIMER != 0) and (self._off_time != 0)
-            and (self._off_time < now)):
+        if ((self._hook_mask & GPS.HOOK_TIMER != 0) and
+                (self._off_time is not None) and (self._off_time < now)):
             self._state_times[self.pwr_state] += (self._off_time -
                                                   self._update_time) / 1000
             self.pwr_state = GPS.POWER_STATE_OFF
-            self._off_time = 0
+            self._off_time = None
 
         # Update the amount of time that we've been in the current state
         self._state_times[self.pwr_state] += ((now - self._update_time) /
                                               1000)
-
         self._update_time = now

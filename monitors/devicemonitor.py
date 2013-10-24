@@ -6,7 +6,6 @@ import time
 
 
 class DeviceMonitor(threading.Thread):
-
     __slots__ = ["_constants", "has_uid_information"]
 
     def __init__(self, monitor_name, devconstants):
@@ -22,10 +21,10 @@ class DeviceMonitor(threading.Thread):
         self._data_lock = threading.Lock()
         #self.start()
 
-    def _prepare(self, iter_interval=60):
+    def _prepare(self, iter_interval=1):
         """ Called once at the beginning of the daemon loop. """
         self._start_time = round(time.time())
-        self._iter_interval = iter_interval
+        self._iter_interval = iter_interval # Every second
 
         # Iteration-data buffers for cycling during data collection
         self._data1 = None
@@ -57,15 +56,14 @@ class DeviceMonitor(threading.Thread):
             # Compute the next iteration that we can make the start of
             prev_iter = iter_num
             iter_num = max((iter_num + 1), 1 + (now - self._start_time) /
-                    self._iter_interval)
+                                           self._iter_interval)
 
             if prev_iter + 1 != iter_num:
-                self.logger.warn("Had to skip iteration {0} to {1}".format(prev_iter,
-                        iter_num))
+                self.logger.warn("Had to skip iteration {0} to "
+                                 "{1}".format(prev_iter, iter_num))
 
             # Sleep until next iteration completes
-            time.sleep(self._start_time + iter_num*self._iter_interval -
-                    now)
+            time.sleep(self._start_time + iter_num * self._iter_interval - now)
 
         self._on_exit()
 
@@ -109,7 +107,7 @@ class DeviceMonitor(threading.Thread):
                 self._data2 = None
                 self._iter2 = -1
 
-        if ret is None:
+        if not ret:
             self.logger.warn("Could not find data for requested iteration")
 
-        return None
+        return ret

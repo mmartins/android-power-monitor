@@ -19,7 +19,7 @@ class WifiAccess(object):
 
     def __init__(self):
         self.wifi_manager = PythonActivity.mActivity.getSystemService(
-                Context.WIFI_SERVICE)
+            Context.WIFI_SERVICE)
 
     def get_name(self):
         return SystemProperties.get("wifi.interface")

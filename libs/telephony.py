@@ -44,7 +44,7 @@ class TelephonyAccess(object):
 
     def __init__(self):
         self.telephony_manager = PythonActivity.mActivity.getSystemService(
-                Context.TELEPHONY_SERVICE)
+            Context.TELEPHONY_SERVICE)
 
     def get_network_type(self):
         return self.telephony_manager.getNetworkType()

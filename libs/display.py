@@ -8,7 +8,6 @@ PythonActivity = autoclass('org.renpy.android.PythonActivity')
 
 
 class DisplayAccess(object):
-
     def __init__(self):
         self.metrics = DisplayMetrics()
 
@@ -24,4 +23,4 @@ class DisplayAccess(object):
     @staticmethod
     def get_brightness():
         return System.getInt(PythonActivity.mActivity.getContentResolver(),
-                System.SCREEN_BRIGHTNESS)
+                             System.SCREEN_BRIGHTNESS)
