@@ -71,7 +71,6 @@ class ThreeG(DeviceMonitor):
             # We need to allow the real interface state to reset itself so that
             # the next update it knows it's coming back from an off state. We
             # also need to clear all UID information
-            self._provider = None
             self._state.interface_off()
             self._uid_states.clear()
 
@@ -111,8 +110,10 @@ class ThreeG(DeviceMonitor):
                     continue
 
                 # Read operations are the expensive part of polling
-                tx_bytes = Node(self.UID_TX_BYTE_MASK.format(uid))
-                rx_bytes = Node(self.UID_RX_BYTE_MASK.format(uid))
+                with open(self.UID_TX_BYTE_MASK.format(uid)) as fp:
+                    tx_bytes = int(fp.read().strip())
+                with open(self.UID_RX_BYTE_MASK.format(uid)) as fp:
+                    rx_bytes = int(fp.read().strip())
 
                 if (rx_bytes == -1) or (tx_bytes == -1):
                     self.logger.warn("Failed to read UID Tx/Rx byte counts")
@@ -201,8 +202,8 @@ class ThreeGState(object):
             # TODO: Make this always work
             time_mult = 1
             if PowerEstimator.ITERATION_INTERVAL % 1000 != 0:
-                # TODO: Fix invalid reference to logger
-                self.logger.warn("Cannot handle 1-sec interation intervals")
+                # Cannot handle 1-sec iteration intervals
+                pass
             else:
                 time_mult = 1000 // PowerEstimator.ITERATION_INTERVAL
 
