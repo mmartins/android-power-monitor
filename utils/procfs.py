@@ -9,14 +9,14 @@ from sysfs import Node
 
 class ProcNode(Node):
     def __init__(self, path='/proc'):
-        self._path_ = realpath(path)
-        if not self._path_.startswith('/proc/') and not '/proc' == self._path_:
+        self._path = realpath(path)
+        if not self._path.startswith('/proc/') and not '/proc' == self._path:
             raise RuntimeError('Using this on non-procfs files is dangerous!')
 
-        self.__dict__.update(dict.fromkeys(os.listdir(self._path_)))
+        self.__dict__.update(dict.fromkeys(os.listdir(self._path)))
 
     def __repr__(self):
-        return '<procfs.Node "{0}">'.format(self._path_)
+        return '<procfs.Node "{0}">'.format(self._path)
 
 
 proc = ProcNode()

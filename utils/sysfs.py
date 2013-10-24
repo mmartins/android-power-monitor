@@ -20,23 +20,23 @@ from os.path import isdir, isfile, join, realpath
 
 
 class Node(object):
-    __slots__ = ['_path_', '__dict__']
+    __slots__ = ['_path', '__dict__']
 
     def __init__(self, path='/sys'):
-        self._path_ = realpath(path)
-        if not self._path_.startswith('/sys/') and not '/sys' == self._path_:
+        self._path = realpath(path)
+        if not self._path.startswith('/sys/') and not '/sys' == self._path:
             raise RuntimeError('Using this on non-sysfs files is dangerous!')
 
-        self.__dict__.update(dict.fromkeys(listdir(self._path_)))
+        self.__dict__.update(dict.fromkeys(listdir(self._path)))
 
     def __repr__(self):
-        return '<sysfs.Node "%s">' % self._path_
+        return '<sysfs.Node "%s">' % self._path
 
     def __setattr__(self, name, val):
         if name.startswith('_'):
             return object.__setattr__(self, name, val)
 
-        path = realpath(join(self._path_, name))
+        path = realpath(join(self._path, name))
         if isfile(path):
             with open(path, 'w') as fp:
                 fp.write(str(val))
@@ -47,7 +47,7 @@ class Node(object):
         if name.startswith('_'):
             return object.__getattribute__(self, name)
 
-        path = realpath(join(self._path_, name))
+        path = realpath(join(self._path, name))
         if isfile(path):
             with open(path, 'r') as fp:
                 data = fp.read().strip()
@@ -65,7 +65,7 @@ class Node(object):
         return getattr(self, name)
 
     def __iter__(self):
-        return iter(listdir(self._path_))
+        return iter(listdir(self._path))
 
 
 sys = Node()
