@@ -26,6 +26,7 @@ class Audio(DeviceMonitor):
         super(Audio, self).__init__(Hardware.AUDIO, devconstants)
 
         self._uid_states = {}
+        self._uid_usage = None
         self._uidstate_lock = threading.Lock()
         self._sys_uid = None
 
@@ -69,17 +70,18 @@ class Audio(DeviceMonitor):
         iteration. """
         result = IterationData()
 
-        audio_on = (len(self._uid_states) != 0) or (
-        self.AudioProxy.is_music_active())
+        audio_on = (not self._uid_usage and len(self._uid_states) != 0) or \
+                   (self.AudioProxy.is_music_active())
         result.set_sys_usage(AudioUsage(audio_on))
 
-        with self._uidstate_lock:
-            uid = -1
+        if self._uid_usage is not None:
+            with self._uidstate_lock:
+                uid = -1
 
-            for usage in self._uid_states.values():
-                if usage.uid != uid:
-                    result.set_uid_usage(usage.proxy_uid, AudioUsage(True))
-                uid = usage.uid
+                for usage in self._uid_usage.values():
+                    if usage.uid != uid:
+                        result.set_uid_usage(usage.proxy_uid, AudioUsage(True))
+                    uid = usage.uid
 
         return result
 
@@ -97,6 +99,8 @@ class AudioUsage(UsageData):
 class MediaUsage(object):
     __slots__ = ['uid', 'id_', 'proxy_uid']
 
+    # TODO: Reference code tells media usage should be compared using both
+    # uid and id_. Need to review this.
     def __init__(self, uid, id_):
         self.uid = uid
         self.id_ = id_
@@ -112,7 +116,7 @@ class MediaUsage(object):
         return (self.uid < obj.uid) or (self.id_ < obj.id_)
 
     def __gt__(self, obj):
-        return (self.uid > obj.uid) or (self.id_ < obj.id_)
+        return (self.uid > obj.uid) or (self.id_ > obj.id_)
 
     def __le__(self, obj):
         return (self.uid <= obj.uid) or (self.id_ <= obj.id_)
