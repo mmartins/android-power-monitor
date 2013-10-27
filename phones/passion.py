@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 
-try:
-    from libs.display import DisplayAccces
-except ImportError:
-    from utils.androidhelpers.display import DisplayAccess
-
+from libs.display import DisplayAccess
 from monitors.audio import Audio
 from monitors.cpu import CPU
 from monitors.gps import GPS

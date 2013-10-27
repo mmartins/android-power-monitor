@@ -2,10 +2,7 @@
 
 from __future__ import division
 
-try:
-    from libs.wifi import WifiAccess
-except ImportError:
-    from utils.androidhelpers.wifi import Wifi
+from libs.wifi import WifiAccess
 
 from monitors.devicemonitor import DeviceMonitor
 from services.iterationdata import IterationData

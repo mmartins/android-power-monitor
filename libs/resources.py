@@ -11,7 +11,8 @@ class ResourceAccess(object):
     __slot__ = ["activity_manager"]
 
     def __init__(self):
-        self.activity_manager = PythonActivity.mActivity.getSystemService(Context.ACTIVITY_SERVICE)
+        self.activity_manager = \
+            PythonActivity.mActivity.getSystemService(Context.ACTIVITY_SERVICE)
 
     def get_running_apps(self):
         return self.activity_manager.getRunningAppProcesses().toArray()

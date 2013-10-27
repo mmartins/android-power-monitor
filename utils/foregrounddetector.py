@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 
-try:
-    from libs.resources import ResourceAccess
-except ImportError:
-    from utils.androidhelpers.resources import ResourceAccess
-
+from libs.resources import ResourceAccess
 from utils.systeminfo import SystemInfo
 from jnius import autoclass
 

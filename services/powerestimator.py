@@ -2,16 +2,15 @@
 
 from __future__ import division
 
-from monitors.devicemonitor import DeviceMonitor
 from utils.batterystats import BatteryStats
 from utils.counter import Counter
 from utils.hardware import Hardware
 from utils.systeminfo import SystemInfo
-from utils.powerbuffer import PowerBuffer
 
 import math
 import threading
 import time
+
 
 class PowerEstimator(threading.Thread):
 

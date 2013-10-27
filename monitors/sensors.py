@@ -2,14 +2,8 @@
 
 from __future__ import division
 
-try:
-    from libs.notification import NotificationProxy
-except ImportError:
-    from utils.androidhelpers.notification import NotificationProxy
-try:
-    from libs.sensors import SensorAccess
-except ImportError:
-    from utils.androidhelpers.sensors import SensorAccess
+from libs.notification import NotificationProxy
+from libs.sensors import SensorsAccess
 from monitors.devicemonitor import DeviceMonitor
 from services.iterationdata import IterationData
 from services.usagedata import UsageData
@@ -20,7 +14,7 @@ import time
 
 
 class Sensors(DeviceMonitor):
-    SENSORS = SensorAccess.get_sensors().keys()
+    SENSORS = SensorsAccess.get_sensors().keys()
 
     def __init__(self, devconstants=None):
         super(Sensors, self).__init__(Hardware.SENSORS, devconstants)

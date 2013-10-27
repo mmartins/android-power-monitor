@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from usagedata import UsageData
 from utils.systeminfo import SystemInfo
 
 

@@ -1,14 +1,7 @@
 #!/usr/bin/env python
 
-try:
-    from libs.notification import NotificationProxy
-except ImportError:
-    from utils.androidhelpers.notification import NotificationProxy
-
-try:
-    from libs.audio import AudioAccess
-except ImportError:
-    from utils.androidhelpers.audio import AudioAccess
+from libs.notification import NotificationProxy
+from libs.audio import AudioAccess
 
 from monitors.devicemonitor import DeviceMonitor
 from services.iterationdata import IterationData

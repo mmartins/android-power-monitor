@@ -2,11 +2,7 @@
 
 from __future__ import division
 
-try:
-    from libs.sensors import SensorsAccess
-except ImportError:
-    from utils.androidhelpers.sensors import SensorsAccess
-
+from libs.sensors import SensorsAccess
 from monitors.audio import Audio
 from monitors.cpu import CPU
 from monitors.gps import GPS

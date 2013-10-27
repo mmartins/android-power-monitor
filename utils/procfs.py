@@ -3,7 +3,7 @@
 __all__ = ['proc', 'ProcNode']
 
 import os
-from os.path import isdir, isfile, join, realpath
+from os.path import realpath
 from sysfs import Node
 
 

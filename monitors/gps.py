@@ -2,18 +2,9 @@
 
 from __future__ import division
 
-try:
-    from libs.build import Build
-except ImportError:
-    from utils.androidhelpers.build import Build
-try:
-    from utils.androidhelpers.gps import GPSListener
-except ImportError:
-    from libs.gps import GPSListener
-try:
-    from libs.notification import NotificationProxy
-except ImportError:
-    from utils.androidhelpers.notification import NotificationProxy
+from libs.sdk import Build
+from libs.gps import GPSListener
+from libs.notification import NotificationProxy
 
 from monitors.devicemonitor import DeviceMonitor
 from services.iterationdata import IterationData

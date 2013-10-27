@@ -3,11 +3,7 @@
 
 from __future__ import division
 
-try:
-    from libs.telephony import TelephonyAccess
-except ImportError:
-    from utils.androidhelpers.telephony import TelephonyAccess
-
+from libs.telephony import TelephonyAccess
 from monitors.devicemonitor import DeviceMonitor
 from services.iterationdata import IterationData
 from services.usagedata import UsageData
