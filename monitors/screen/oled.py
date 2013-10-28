@@ -63,12 +63,12 @@ class OLED(Screen):
         with self._screenlock:
             screen = self.screen_on
 
-        px_pwr = 0
+        px_pwr = 0.0
 
         # TODO: Substitute with C-based getScreenPixPower native function
         if screen and self._fb_file is not None:
             try:
-                with open (self._fb_file) as fp:
+                with open(self._fb_file) as fp:
                     for x in self._fb_samples:
                         fp.seek(x * 4)
                         # Read 32-bit integer from file
@@ -85,14 +85,15 @@ class OLED(Screen):
 
                         sum_colors = red + green + blue
                         px_pwr += (self.RED_PWR * (red*red) +
-                                self.GREEN_PWR * (green*green) +
-                                self.BLUE_PWR * (blue*blue) -
-                                self.MODULATION_PWR * (sum_colors*sum_colors))
+                                   self.GREEN_PWR * (green*green) +
+                                   self.BLUE_PWR * (blue*blue) -
+                                   self.MODULATION_PWR *
+                                   (sum_colors * sum_colors))
             except IOError as (errno, strerr):
                 self.logger.warn("Can't read framebuffer {0}".format(strerr))
-                px_pwr = -1
+                px_pwr = 0.0
 
-            if px_pwr >= 0.0:
+            if px_pwr > 0.0:
                 px_pwr *= self.width * self.height / self.NSAMPLES
 
         if screen:
