@@ -20,8 +20,8 @@ class Screen(DeviceMonitor):
 
     def __init__(self, monitor_name, devconstants):
         super(Screen, self).__init__(monitor_name, devconstants)
-        self.br = BroadcastReceiver(self.__on_receive, action=['screen_on',
-                                                               'screen_off'])
+        self.br = BroadcastReceiver(self.__on_receive, actions=['screen_on',
+                                                                'screen_off'])
         self.width = self.Display.get_width()
         self.height = self.Display.get_height()
 
