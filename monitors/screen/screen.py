@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 
-try:
-    from libs.display import DisplayAccess
-except ImportError:
-    from utils.androidhelpers.display import DisplayAccess
+from libs.display import DisplayAccess
 
 from libs.broadcast import BroadcastReceiver
 from monitors.devicemonitor import DeviceMonitor
 
+import os
 import threading
 
 
@@ -48,12 +46,13 @@ class Screen(DeviceMonitor):
     @classmethod
     def get_display_brightness(cls):
         for filename in cls.BACKLIGHT_BRIGHTNESS_FILES:
-            try:
-                with open(filename, 'r') as fp:
-                    brightness = int(fp.read().strip())
-                    return brightness
-            except (IOError, ValueError):
-                pass
+            if os.path.exists(filename):
+                try:
+                    with open(filename, 'r') as fp:
+                        brightness = int(fp.read().strip())
+                        return brightness
+                except (IOError, ValueError):
+                    pass
 
         return DisplayAccess.get_brightness()
 
