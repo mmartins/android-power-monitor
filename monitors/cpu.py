@@ -181,7 +181,7 @@ class CPUUsage(UsageData):
     __slots__ = ['_freq']
 
     def __init__(self, sys_perc, usr_perc, freq):
-        super(CPUUsage, self).__init__(self)
+        super(CPUUsage, self).__init__()
 
         self._sys_perc = sys_perc
         self._usr_perc = usr_perc

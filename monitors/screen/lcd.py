@@ -39,6 +39,7 @@ class LCDUsage(UsageData):
     __slots__ = ['brightness', 'screen_on']
 
     def __init__(self, brightness, screen_on):
+        super(LCDUsage, self).__init__()
         self.brightness = brightness
         self.screen_on = screen_on
 

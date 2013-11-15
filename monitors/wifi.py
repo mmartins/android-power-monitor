@@ -153,6 +153,7 @@ class WifiUsage(UsageData):
 
     def __init__(self, on=False, pkts=0, tx_bytes=0, rx_bytes=0, tx_rate=0.0,
                  speed=0, pwr_state=0):
+        super(WifiUsage, self).__init__()
         self.on = on
         self.delta_pkts = pkts
         self.tx_bytes = tx_bytes

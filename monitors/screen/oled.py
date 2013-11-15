@@ -113,6 +113,7 @@ class OLEDUsage(UsageData):
     __slots__ = ['screen_on', 'brightness', 'pix_pwr']
 
     def __init__(self, screen_on=False, brightness=0, pix_pwr=0.0):
+        super(OLEDUsage, self).__init__()
         self.screen_on = screen_on
         self.brightness = brightness
         self.pix_pwr = pix_pwr

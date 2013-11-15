@@ -73,6 +73,7 @@ class Sensors(DeviceMonitor):
 
 class SensorUsage(UsageData):
     def __init__(self):
+        super(SensorUsage, self).__init__()
         self.on_times = {}
 
     def log(self, out):

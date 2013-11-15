@@ -83,6 +83,7 @@ class AudioUsage(UsageData):
     __slots__ = ['music_on']
 
     def __init__(self, music_on):
+        super(AudioUsage, self).__init__()
         self.music_on = music_on
 
     def log(self, out):
