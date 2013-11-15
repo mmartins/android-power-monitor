@@ -190,7 +190,7 @@ class CPUUsage(UsageData):
     def log(self, out):
         """ Raises IOError error if output stream can't be written
         """
-        out.write("CPU-sys {0} CPU-usr {1} CPU-freq {2}\n".format(
+        out.write("CPU-sys: {} CPU-usr: {} CPU-freq: {}\n".format(
             self._sys_perc, self._usr_perc, self._freq))
 
 
@@ -199,8 +199,9 @@ class CPUState(object):
 
     def __init__(self, uid):
         self.uid = uid
-        self._last_usr = -1      # user time
-        self._last_sys = 0      # system time
+        # TODO: Maybe change -1 to current clock?
+        self._last_usr = -1     # user time
+        self._last_sys = -1     # system time
         self._last_total = 0    # total time
         self._delta_usr = 0
         self._delta_sys = 0
@@ -226,6 +227,7 @@ class CPUState(object):
         self._iteration = iteration
 
     def update(self, usr_time, sys_time, total_time, iteration):
+        # This will directly increase the delta by one second at the first run
         self._delta_usr = usr_time - self._last_usr
         self._delta_sys = sys_time - self._last_sys
         self._delta_total = total_time - self._last_total
