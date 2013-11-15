@@ -23,8 +23,13 @@ class ForegroundDetector(object):
         # Find a valid app now. Hopefully there is only one. If there are non,
         # return system.
         #
-        cls._displayed_uids = [SystemInfo.get_uid_for_pid(app.pid) for app in
-                      apps if app.importance == cls.IMPORTANCE_FOREGROUND]
+        for app in apps:
+            if app.importance == cls.IMPORTANCE_FOREGROUND:
+                uid = SystemInfo.get_uid_for_pid(app.pid)
+                # Make sure we have a user app and UID does not go over
+                # kernel limit number
+                if (uid >= SystemInfo.AID_APP) and uid < (1 << 16):
+                    cls._displayed_uids.append(uid)
 
         cls._displayed_uids.sort()
 
