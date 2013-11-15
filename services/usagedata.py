@@ -6,7 +6,7 @@ class UsageData(object):
         self.usage = usage
 
     def __repr__(self):
-        return "usage = {0}".format(self.usage)
+        return "Usage: {}\n".format(self.usage)
 
     def add(self, usage):
         self.usage += usage

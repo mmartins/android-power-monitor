@@ -77,7 +77,7 @@ class SensorUsage(UsageData):
         self.on_times = {}
 
     def log(self, out):
-        res = "Sensors-time {0}\n".format(self.on_times)
+        res = "Sensors-time: {}\n".format(self.on_times)
         out.write(res)
 
 

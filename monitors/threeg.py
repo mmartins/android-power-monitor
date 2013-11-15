@@ -144,10 +144,9 @@ class ThreeGUsage(UsageData):
         self.provider = provider
 
     def log(self, out):
-        res = "3G-on {0}\n3G-pkts {1}\n3G-tx_bytes {2}\n3G-rx_bytes " \
-              "{3}\n3G-pwr_state {4}\n3G-provider " \
-              "{5}\n".format(self.on, self.pkts, self.tx_bytes,
-                             self.rx_bytes, self.pwr_state, self.provider)
+        res = "3G-on: {} 3G-pkts: {} 3G-tx_bytes: {} 3G-rx_bytes: {} " \
+              "3G-pwr_state: {} 3G-provider: {}\n".format(self.on, self.pkts,
+              self.tx_bytes, self.rx_bytes, self.pwr_state, self.provider)
         out.write(res)
 
 

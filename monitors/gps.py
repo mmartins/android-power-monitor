@@ -213,7 +213,7 @@ class GPSUsage(UsageData):
         self.num_satellites = num_satellites
 
     def log(self, out):
-        res = "GPS-state-times {0}\nGPS-num_satellites {1}\n".format(
+        res = "GPS-state-times: {} GPS-num_satellites: {}\n".format(
             self.state_times, self.num_satellites)
         out.write(res)
 

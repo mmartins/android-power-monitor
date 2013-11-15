@@ -87,7 +87,7 @@ class AudioUsage(UsageData):
         self.music_on = music_on
 
     def log(self, out):
-        out.write("Audio-on {0}\n".format(self.music_on))
+        out.write("Audio-on: {}\n".format(self.music_on))
 
 
 class MediaUsage(object):

@@ -163,11 +163,10 @@ class WifiUsage(UsageData):
         self.pwr_state = pwr_state
 
     def log(self, out):
-        res = "Wifi-on {0}\nWifi-pkts {1}\nWifi-tx_bytes {2}\nWifi-rx_bytes " \
-              "{3}\nWifi-tx_rate{4}\nWifi-speed {5}\nWifi-pwr_state " \
-              "{5}\n".format(self.on, self.delta_pkts, self.tx_bytes,
-                             self.rx_bytes, self.tx_rate, self.speed,
-                             self.pwr_state)
+        res = "Wifi-on: {} Wifi-pkts: {}; Wifi-tx_bytes: {} Wifi-rx_bytes: " \
+              "{} Wifi-tx_rate: {} Wifi-speed: {} Wifi-pwr_state: {}\n".format(
+              self.on, self.delta_pkts, self.tx_bytes, self.rx_bytes,
+              self.tx_rate, self.speed, self.pwr_state)
         out.write(res)
 
 

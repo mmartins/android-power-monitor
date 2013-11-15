@@ -119,5 +119,5 @@ class OLEDUsage(UsageData):
         self.pix_pwr = pix_pwr
 
     def log(self, out):
-        res = "OLED-brightness {0}\nOLED-screen-on {1}\nOLED-pix_power {2}\n"
+        res = "OLED-brightness {} OLED-screen-on {} OLED-pix_power {}\n"
         out.write(res.format(self.brightness, self.screen_on, self.pix_pwr))

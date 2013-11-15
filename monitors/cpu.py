@@ -190,7 +190,7 @@ class CPUUsage(UsageData):
     def log(self, out):
         """ Raises IOError error if output stream can't be written
         """
-        out.write("CPU-sys {0}\n CPU-usr {1}\n CPU-freq {2}\n".format(
+        out.write("CPU-sys {0} CPU-usr {1} CPU-freq {2}\n".format(
             self._sys_perc, self._usr_perc, self._freq))
 
 

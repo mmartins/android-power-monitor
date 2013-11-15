@@ -44,6 +44,6 @@ class LCDUsage(UsageData):
         self.screen_on = screen_on
 
     def log(self, out):
-        res = "LCD-brightness {0}\nLCD-screen-on {1}\n".format(self.brightness,
-                                                               self.screen_on)
+        res = "LCD-brightness: {} LCD-screen-on: {}\n".format(self.brightness,
+              self.screen_on)
         out.write(res)
