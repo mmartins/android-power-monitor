@@ -30,6 +30,7 @@ class GPS(DeviceMonitor):
     GPS_STATUS_ENGINE_ON = 3
     GPS_STATUS_ENGINE_OFF = 4
 
+    NO_HOOKS = 0
     HOOK_GPS_STATUS_LISTENER = 1
     HOOK_NOTIFICATIONS = 2
     HOOK_TIMER = 4
@@ -108,7 +109,7 @@ class GPS(DeviceMonitor):
         # notifications, let's just use a timer and simulate the state of
         # the GPS instead
 
-        if self._hook_method & self.HOOK_NOTIFICATIONS == 0:
+        if self._hook_method & self.HOOK_NOTIFICATIONS == self.NO_HOOKS:
             self._hook_method |= self.HOOK_TIMER
 
     def __on_start_wakelock(self, uid, name, lock_type):
@@ -150,7 +151,7 @@ class GPS(DeviceMonitor):
 
             state = self._uid_states.get(uid, None)
 
-            if state is None:
+            if not state:
                 state = GPSState(self.HOOK_NOTIFICATIONS | self.HOOK_TIMER,
                                  self._sleep_time, self._update_time)
                 self._uid_states[uid] = state
@@ -256,7 +257,7 @@ class GPSState(object):
         return self._state_times
 
     def reset_times(self):
-        self._state_times = [0 for i in xrange(GPS.NPOWER_STATES)]
+        self._state_times = [0] * GPS.NPOWER_STATES
 
     def update_event(self, event, hook_source):
         """ When a hook source gets an event, it should report it to this
@@ -264,7 +265,7 @@ class GPSState(object):
         class itself.
         """
         # TODO: Access should be locked
-        if (self._hook_mask & hook_source) == 0:
+        if (self._hook_mask & hook_source) == GPS.NO_HOOKS:
             # We are not using this hook source, ignore.
             return
 
@@ -296,7 +297,7 @@ class GPSState(object):
         now = round(time.time())
 
         # Check if GPS has gone to sleep state due to timer
-        if ((self._hook_mask & GPS.HOOK_TIMER != 0) and
+        if ((self._hook_mask & GPS.HOOK_TIMER != GPS.NO_HOOKS) and
                 (self._off_time is not None) and (self._off_time < now)):
             self._state_times[self.pwr_state] += (self._off_time -
                                                   self._update_time) / 1000
