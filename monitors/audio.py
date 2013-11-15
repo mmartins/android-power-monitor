@@ -63,8 +63,8 @@ class Audio(DeviceMonitor):
         iteration. """
         result = IterationData()
 
-        audio_on = (not self._uid_usage and len(self._uid_states) != 0) or \
-                   (self.AudioProxy.is_music_active())
+        audio_on = (self._uid_usage is not None and len(self._uid_states) !=
+                    0) or (self.AudioProxy.is_music_active())
         result.set_sys_usage(AudioUsage(audio_on))
 
         if self._uid_usage is not None:
