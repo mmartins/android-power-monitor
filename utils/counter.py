@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
+from jnius import autoclass
 from __future__ import division
 import time
+
+
+SystemClock = autoclass("android.os.SystemClock")
 
 
 class Counter(object):
@@ -20,7 +24,7 @@ class Counter(object):
 
     def __init__(self):
         self._total = 0
-        self._start_time = round(time.time())
+        self._start_time = SystemClock.elapsedRealtime()
 
         self._counters = {
             self.COUNTER_MINUTE: _BucketCounter(),
@@ -31,7 +35,7 @@ class Counter(object):
 
     def add(self, value):
         self._total += value
-        now = round(time.time()) - self._start_time
+        now = SystemClock.elapsedRealtime() - self._start_time
         for type_, counter in self._counters.iteritems():
             counter.add(value, now * _BucketCounter.BUCKET_NUM /
                                Counter.COUNTER_DURATIONS[type_])
@@ -42,8 +46,8 @@ class Counter(object):
         if type_ == Counter.COUNTER_TOTAL:
             return self._total
 
-        now = round(time.time()) - self._start_time
-        timestamp = (now * _BucketCounter.BUCKET_NUM //
+        now = SystemClock.elapsedRealtime() - self._start_time
+        timestamp = (now * _BucketCounter.BUCKET_NUM /
                      Counter.COUNTER_DURATIONS[type_])
         progress = ((now * _BucketCounter.BUCKET_NUM %
                      Counter.COUNTER_DURATIONS[type_]) /
