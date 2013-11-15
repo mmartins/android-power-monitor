@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
+from jnius import autoclass
+
 import logging
 import os
+
+Process = autoclass('android.os.Process')
 
 
 class SystemInfo(object):
@@ -53,6 +57,15 @@ class SystemInfo(object):
 
     @classmethod
     def get_uid_for_pid(cls, pid):
+
+        try:
+            uid = Process.getUidForPid(pid)
+            return uid
+        except AttributeError:
+            pass
+
+        # Above method may not be available. Try from kernel
+
         try:
             with open(cls.UID_STATUS_MASK.format(pid)) as fp:
                 data = fp.readlines(6)
@@ -105,7 +118,7 @@ class SystemInfo(object):
             with open(cls.PROC_STAT_FILE) as fp:
                 data = fp.readlines(cpu + 1)
                 if data[cpu + 1].startswith("cpu"):
-                    times = data[cpu + 1].split()
+                    times = data[cpu + 1].strip().split()
                     # [usr, sys, total]
                     usr = int(times[1]) + int(times[2])
                     sys = int(times[2]) + int(times[6]) + int(times[7])
