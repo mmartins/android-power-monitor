@@ -97,7 +97,7 @@ class ThreeG(DeviceMonitor):
         if uids is not None:
             for uid in uids:
                 if uid < 0:
-                    break
+                    continue
 
                 uid_state = self._uid_states.setdefault(uid, ThreeGState())
 
