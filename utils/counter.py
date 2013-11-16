@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 
-from jnius import autoclass
 from __future__ import division
-import time
-
-
-SystemClock = autoclass("android.os.SystemClock")
+from libs.clock import SystemClock
 
 
 class Counter(object):

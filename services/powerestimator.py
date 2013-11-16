@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import division
+from libs.clock import SystemClock
 
 from utils.batterystats import BatteryStats
 from utils.counter import Counter
@@ -47,7 +48,7 @@ class PowerEstimator(threading.Thread):
     def _run(self):
         """Loop that keeps updating the power profile"""
 
-        start_time = round(time.time())
+        start_time = SystemClock.elapsedRealtime()
 
         for hw in self._phone.hardware.values():
             hw.init(start_time, self.ITERATION_INTERVAL)
@@ -57,19 +58,17 @@ class PowerEstimator(threading.Thread):
         iter_num = 0
 
         while self.is_running():
-            now = round(time.time())
+            now = SystemClock.elapsedRealtime()
 
             # Compute the next iteration that we can make the ending of. We
             # wait for the end of the iteration so that the monitors have a
             # chance to collect data
-
-
             iter_num = max(iter_num, (now - start_time) //
-                    self.ITERATION_INTERVAL)
+                           self.ITERATION_INTERVAL)
 
             # sleep until the next iteration completes
             time.sleep(start_time + iter_num *
-                    self.ITERATION_INTERVAL - now)
+                       self.ITERATION_INTERVAL - now)
 
             total_power = 0
 

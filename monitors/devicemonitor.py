@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from libs.clock import SystemClock
 import logging
 import threading
 import time
@@ -23,7 +24,7 @@ class DeviceMonitor(threading.Thread):
 
     def _prepare(self, iter_interval=1):
         """ Called once at the beginning of the daemon loop. """
-        self._start_time = round(time.time())
+        self._start_time = SystemClock.elapsedRealtime()
         self._iter_interval = iter_interval # Every second
 
         # Iteration-data buffers for cycling during data collection
@@ -52,11 +53,14 @@ class DeviceMonitor(threading.Thread):
                         self._iter2 = iter_num
                         self._data2 = data
 
-            now = round(time.time())
+            if not self.is_stopped():
+                break
+
+            now = SystemClock.elapsedRealtime()
             # Compute the next iteration that we can make the start of
             prev_iter = iter_num
             iter_num = max((iter_num + 1), 1 + (now - self._start_time) /
-                                           self._iter_interval)
+                           self._iter_interval)
 
             if prev_iter + 1 != iter_num:
                 self.logger.warn("Had to skip iteration {0} to "

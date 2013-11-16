@@ -2,6 +2,7 @@
 
 from __future__ import division
 
+from libs.clock import SystemClock
 from libs.notification import NotificationProxy
 from libs.sensors import SensorsAccess
 from monitors.devicemonitor import DeviceMonitor
@@ -10,7 +11,6 @@ from services.usagedata import UsageData
 from utils.hardware import Hardware
 
 import threading
-import time
 
 
 class Sensors(DeviceMonitor):
@@ -87,12 +87,13 @@ class SensorState(object):
     def __init__(self):
         self._on = dict.fromkeys(Sensors.SENSORS, 0)
         self._on_times = dict.fromkeys(Sensors.SENSORS, 0)
-        self._timestamp = round(time.time())
+        self._timestamp = SystemClock.elapsedRealtime()
         self.started_sensors = 0
 
     def start_sensor(self, name):
         if (name in self._on) and (self._on[name] == 0):
-            self._on_times[name] -= round(time.time()) - self._timestamp
+            self._on_times[name] -= SystemClock.elapsedRealtime() -\
+                self._timestamp
             self.started_sensors += 1
 
         # WARNING: May break when name is invalid
@@ -103,12 +104,13 @@ class SensorState(object):
             if self._on[name] == 0:
                 return
             if self._on[name] - 1 == 0:
-                self._on_times[name] += round(time.time()) - self._timestamp
+                self._on_times[name] += (SystemClock.elapsedRealtime() -
+                                         self._timestamp)
                 self.started_sensors -= 1
             self._on[name] -= 1
 
     def get_times(self):
-        now = round(time.time())
+        now = SystemClock.elapsedRealtime()
         div = now - self._timestamp
 
         if div <= 0:

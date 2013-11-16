@@ -2,9 +2,10 @@
 
 from __future__ import division
 
-from libs.sdk import Build
+from libs.clock import SystemClock
 from libs.gps import GPSListener
 from libs.notification import NotificationProxy
+from libs.sdk import Build
 
 from monitors.devicemonitor import DeviceMonitor
 from services.iterationdata import IterationData
@@ -14,7 +15,6 @@ from utils.systeminfo import SystemInfo
 
 import logging
 import threading
-import time
 
 
 class GPS(DeviceMonitor):
@@ -236,7 +236,7 @@ class GPSState(object):
         self._sleep_time = sleep_time
 
         if not update_time:
-            self._update_time = round(time.time())
+            self._update_time = SystemClock.elapsedRealtime()
         else:
             self._update_time = update_time
 
@@ -288,13 +288,14 @@ class GPSState(object):
         if self.pwr_state != prev_state:
             if ((prev_state == GPS.POWER_STATE_ON) and
                     (self.pwr_state == GPS.POWER_STATE_SLEEP)):
-                self._off_time = time.time() + self._sleep_time
+                self._off_time = SystemClock.elapsedRealtime() + \
+                    self._sleep_time
             else:
                 # Any other state transition should reset the off timer
                 self._off_time = None
 
     def _update_times(self):
-        now = round(time.time())
+        now = SystemClock.elapsedRealtime()
 
         # Check if GPS has gone to sleep state due to timer
         if ((self._hook_mask & GPS.HOOK_TIMER != GPS.NO_HOOKS) and

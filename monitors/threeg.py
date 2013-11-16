@@ -3,6 +3,7 @@
 
 from __future__ import division
 
+from libs.clock import SystemClock
 from libs.telephony import TelephonyAccess
 from monitors.devicemonitor import DeviceMonitor
 from services.iterationdata import IterationData
@@ -173,14 +174,14 @@ class ThreeGState(object):
         self._rxqueue_size = rxqueue_size
 
     def interface_off(self):
-        self._update_time = round(time.time())
+        self._update_time = SystemClock.elapsedRealtime()
         self.pwr_state = ThreeG.POWER_STATE_IDLE
 
     def is_initialized(self):
         return self._update_time is not None
 
     def update(self, tx_pkts, rx_pkts, tx_bytes, rx_bytes):
-        now = round(time.time())
+        now = SystemClock.elapsedRealtime()
 
         if (self._update_time is not None) and (now > self._update_time):
             delta_time = now - self._update_time
@@ -240,5 +241,6 @@ class ThreeGState(object):
             return True
 
         # TODO: check if 10000 us the correct number (Why 10s?)
-        return ((round(time.time()) - self._update_time) >
+        # Reduce this number if we want more frequent 3G checks
+        return ((SystemClock.elapsedRealtime() - self._update_time) >
                 min(10000, self._inactive_time))

@@ -2,6 +2,7 @@
 
 from __future__ import division
 
+from libs.clock import SystemClock
 from libs.wifi import WifiAccess
 
 from monitors.devicemonitor import DeviceMonitor
@@ -194,14 +195,14 @@ class WifiState(object):
         self.inactive_time = 0
 
     def interface_off(self):
-        self._update_time = round(time.time())
+        self._update_time = SystemClock.elapsedRealtime()
         self.pwr_state = Wifi.POWER_STATE_LOW
 
     def is_initialized(self):
         return self._update_time is not None
 
     def update(self, tx_pkts, rx_pkts, tx_bytes, rx_bytes):
-        now = round(time.time())
+        now = SystemClock.elapsedRealtime()
 
         if (self._update_time is not None) and (now > self._update_time):
             delta_time = now - self._update_time
@@ -245,5 +246,6 @@ class WifiState(object):
             return True
 
         # TODO: check if 10000 is the correct number (should be 10s?)
-        return ((round(time.time()) - self._update_time) >
+        # Reduce this number if we want more frequent WiFi checks
+        return ((SystemClock.elapsedRealtime() - self._update_time) >
                 min(10000, self.inactive_time))
