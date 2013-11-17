@@ -6,6 +6,7 @@ import logging
 import os
 
 Process = autoclass('android.os.Process')
+PythonActivity = autoclass('org.renpy.android.PythonActivity').mActivity
 
 
 class SystemInfo(object):
@@ -41,6 +42,17 @@ class SystemInfo(object):
     AID_MISC = 9998         # access to misc storage
     AID_NOBODY = 9999
     AID_APP = 10000         # first app user
+
+    UID_NAMES = {AID_ROOT: "Kernel", AID_SYSTEM: "System",
+                 AID_RADIO: "Radio service", AID_BLUETOOTH: "Bluetooth",
+                 AID_GRAPHICS: "Graphics", AID_INPUT: "Input service",
+                 AID_AUDIO: "Audio service", AID_CAMERA: "Camera service",
+                 AID_LOG: "Log service", AID_COMPASS: "Compass service",
+                 AID_MOUNT: "Mount service", AID_WIFI: "Wifi service",
+                 AID_ADB: "Android Debug Bridge", AID_INSTALL: "Install",
+                 AID_MEDIA: "Media server", AID_DHCP: "DHCP client",
+                 AID_SHELL: "Shell client", AID_CACHE: "Cache access",
+                 AID_DIAG: "Diagnostics"}
 
     PID_STAT_MASK = "/proc/{0}/stat"
     PROC_DIR = "/proc"
@@ -86,6 +98,25 @@ class SystemInfo(object):
         pids = [int(file_)
                 for file_ in os.listdir(cls.PROC_DIR) if file_.isdigit()]
         return pids
+
+    @classmethod
+    def get_uid_name(cls, uid):
+        """Return package name associated with uid. Caveat: some apps share
+        the same uids"""
+
+        if cls.UID_NAMES.has_key(uid):
+            return cls.UID_NAMES[uid]
+
+        if uid < cls.AID_APP:
+            return "sys_{}".format(uid)
+
+        pm = PythonActivity.getPackageManager()
+        packages = pm.getPackagesForUid(uid)
+
+        if packages is not None:
+            return packages.toArray()[0]
+
+        return "app_{}".format(uid)
 
     @classmethod
     def get_uids(cls):

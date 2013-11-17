@@ -2,8 +2,8 @@
 
 from __future__ import division
 from libs.clock import SystemClock
+from libs.settings import Settings
 from services.uidinfo import UidInfo
-
 from utils.batterystats import BatteryStats
 from utils.counter import Counter
 from utils.hardware import Hardware
@@ -79,6 +79,13 @@ class PowerEstimator(threading.Thread):
             total_power = 0
 
             hw_data = {}
+
+            if iter_num % (30 * 60) == 0:
+                self._log_sys_settings()
+
+            if iter_num % 60 == 0:
+                self._log_battery()
+
             for name, hw in self._phone.hardware.iteritems():
                 data = hw.get_data(iter_num)
 
@@ -90,26 +97,29 @@ class PowerEstimator(threading.Thread):
                 for uid, usage in data.uid_usage.iteritems():
 
                     power = self._phone.power_function[name](usage)
-                    usage = power
+                    usage.power = power
                     self._pwr_history[name].add(uid, iter_num, power)
                     if uid == SystemInfo.AID_ALL:
                         total_power += power
 
                     # Update list of running apps
-                    # TODO: Implement get_app_name function
                     with self._appslock:
                         self._running_apps.setdefault(uid,
-                                                      SystemInfo.get_app_name(
+                                                      SystemInfo.get_uid_name(
                                                       uid))
 
                     if name == "OLED" and usage.pix_pwr >= 0:
                         self._oled_pwr_history.add_power(uid, iter_num,
                                                          1000 * data.pix_pwr)
 
+                    self._log_uid_power(self, uid, name, power)
+
+                # Only log app names for the first time
+                if iter_num == 0:
+                    self._log_app_names()
+
+                self._log_power(total_power, hw_data)
                 self._update_avg_power()
-                self._log_battery()
-                self._log_sys_settings()
-                self._log_power()
 
         # Wait for all hardware monitors to finish
         for hw in self._phone.hardware.values():
@@ -135,43 +145,73 @@ class PowerEstimator(threading.Thread):
             self._log.write("== BATTERY INFO END ==\n")
 
     def _log_sys_settings(self):
-        # TODO
-        out = "screen-brightness-automatic: {} screen-brightness: {}" \
-              "screen-brightness-timeout: {}\n".format()
+        out = "time {}\nmodel {}\n".format(time.time(),
+                                           self._phone.constants.MODEL_NAME)
+
+        out += "screen-brightness: {}"
+
+        if Settings.get_display_brightness_mode() != 0:
+            out.format("automatic")
+        else:
+            out.format(Settings.get_display_brightness())
+
+        out += "screen-timeout: {}\n".format(Settings.get_display_timeout())
 
         with self._loglock:
             self._log.write("== SYSTEM SETTINGS START ==\n")
             self._log.write(out)
             self._log.write("== SYSTEM SETTINGS END ==\n")
 
-    def _log_power(self):
-        # TODO
+    def _log_uid_power(self, uid, name, power):
         out = ""
+        if uid == SystemInfo.AID_ALL:
+            out = "{} {%.3f}".format(name, power)
+        else:
+            out = "{}-{} {%.2f}".format(name, uid, power)
+
+        with self._loglock:
+            self._log.write(out)
+
+    def _log_power(self, power, hw_data):
+        out = "total-power {%.2f}\n".format(power)
+
+        # Finish this
+        for uid, usage in hw_data.iteritems():
+
         with self._loglock:
             self._log.write("== POWER START ==\n")
             self._log.write(out)
             self._log.write("== POWER END ==\n")
 
-    def _update_avg_power(self):
-        # TODO: finish review
-        hw_history = self.get_hardware_history(5 * 60, -1, SystemInfo.AID_ALL,
-                                               -1)
+    def _log_app_names(self):
+        out = ""
 
+        with self._appslock:
+            for uid, app_name in self._running_apps.iteritems():
+                out += "associate {} {}\n".format(uid, app_name)
+
+        with self._loglock:
+            self._log.write("== APPNAMES START ==\n")
+            self._log.write(out)
+            self._log.write("== APPNAMES END ==\n")
+
+    def _update_avg_power(self):
+        hw_history = self.get_hardware_history(5 * 60, "ALL",
+                                               SystemInfo.AID_ALL, self._)
         avg = 0
         weighted_pwr = 0
         cnt = 0
 
-        INV_POLY_WEIGHT = 1.0 - self.POLYNOMIAL_WEIGHT
+        inv_poly_weight = 1.0 - self.POLYNOMIAL_WEIGHT
         for power in hw_history.values():
             # Skip zero-powers to save cycles
             if power != 0:
                 cnt += 1
-                weighted_pwr *= INV_POLY_WEIGHT
-                weighted_pwr += (self.POLYNOMIAL_WEIGHT * power /
-                        1000.0)
+                weighted_pwr *= inv_poly_weight
+                weighted_pwr += (self.POLYNOMIAL_WEIGHT * power / 1000)
 
         if cnt > 0:
-            avg = weighted_pwr / (1.0 - math.pow(INV_POLY_WEIGHT, cnt))
+            avg = weighted_pwr / (1.0 - math.pow(inv_poly_weight, cnt))
             # Return power in mW
             avg *= 1000
 
@@ -196,16 +236,13 @@ class PowerEstimator(threading.Thread):
 
         return mask
 
-    def get_hardware_history(self, name, uid, iter_num):
-        #if iter_num == -1:
-            #TODO: Finish this
-
+    def get_hardware_history(self, count, name, uid, iter_num):
         if name == "ALL":
             result = dict(self._pwr_history.keys(), 0)
             powers = dict(self._pwr_history.keys(), 0)
             for k, pwrbuf in self._pwr_history.iteritems():
                 powers[k] = pwrbuf.get_powers_up_to_timestamp(uid, iter_num,
-                                                              number)
+                                                              count)
 
                 for i, value in enumerate(powers):
                     result[k] += value
@@ -216,7 +253,7 @@ class PowerEstimator(threading.Thread):
             return None
 
         return self._pwr_history[name].get_power_up_to_timestamp(uid, iter_num,
-                                                                 number)
+                                                                 count)
 
     def get_uid_hw_report(self, uid, countertype):
         """Return report on power drawn by HW components for given UID"""
